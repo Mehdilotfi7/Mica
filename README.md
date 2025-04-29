@@ -9,7 +9,14 @@
    [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
    [![Build Status](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml?query=branch%3Amain)
    [![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
-   
+
+</p>
+
+<p align="center">
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
+[![Build Status](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
 </p>
 
 ## Table of Contents
