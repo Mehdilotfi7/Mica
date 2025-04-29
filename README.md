@@ -1,7 +1,8 @@
 # TSCPDetector
 
+<p align="center">
 <img src="docs/TSCPDetector2.png" width="200" />
-
+</p>
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
