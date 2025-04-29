@@ -1,12 +1,12 @@
 # TSCPDetector
 =======
+<img src="docs/TSCPDetector2.png" width="50" />
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/FirstPkg.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/FirstPkg.jl/dev/)
-[![Build Status](https://github.com/Mehdilotfi7/FirstPkg.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Mehdilotfi7/FirstPkg.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/Mehdilotfi7/FirstPkg.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/FirstPkg.jl)
 
-![My Algorithm Icon](TSCPDetector2.png)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
+[![Build Status](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Mehdilotfi7/TSCPDetector.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
 
 
 
