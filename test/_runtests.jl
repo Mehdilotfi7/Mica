@@ -75,9 +75,9 @@ end
 
     @testset "extract_parameters test" begin
         chrom = [1.0, 2.0, 3.0, 4.0, 5.0]
-        global, segments = extract_parameters(chrom, 2, 3)
-        @test global == [1.0, 2.0]
-        @test segments == [[3.0, 4.0, 5.0]]
+        global_parameters, segment_parameters = extract_parameters(chrom, 2, 3)
+        @test global_parameters == [1.0, 2.0]
+        @test segment_parameters == [[3.0, 4.0, 5.0]]
     end
 
     @testset "objective_function test - regression" begin

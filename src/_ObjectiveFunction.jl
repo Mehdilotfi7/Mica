@@ -4,40 +4,6 @@ using DataFrames
 using LabelledArrays
 
 # =============================================================================
-# segment_loss Function
-# =============================================================================
-"""
-    segment_loss(segment_data, simulated_data, loss_function; compare_variables=nothing, transformation=identity)
-
-Calculate the loss between observed and simulated segment data.
-
-# Arguments
-- `segment_data`: Actual segment data (Vector or Matrix).
-- `simulated_data`: Simulated model output.
-- `loss_function`: A function measuring the discrepancy (e.g., L2 loss).
-- `compare_variables`: Indices of variables to compare. Defaults to all.
-- `transformation`: A transformation applied before loss calculation (e.g., log).
-
-# Returns
-- Loss value.
-"""
-function segment_loss(segment_data, simulated_data, loss_function;
-                      compare_variables=nothing, transformation=identity)
-    if compare_variables === nothing
-        compare_variables = ndims(segment_data) == 1 ? 1 : length(segment_data) : 1:size(segment_data, 1)
-    end
-
-    # Select and transform
-    transformed_sim_data = ndims(simulated_data) == 1 ?
-        transformation(simulated_data[compare_variables]) :
-        transformation(simulated_data[compare_variables, :])
-
-    transformed_segment_data = transformation(segment_data)
-
-    return loss_function(transformed_segment_data, transformed_sim_data)
-end
-
-# =============================================================================
 # extract_parameters Function
 # =============================================================================
 """
@@ -74,11 +40,15 @@ Computes the total loss for the current chromosome, simulating each segment sepa
 - `extract_parameters`: Function to split the chromosome.
 - `parnames`: Parameter names for building labeled arrays.
 - `model_function`, `simulate_model`: Model and simulator.
-- `loss_function`, `segment_loss`: Loss calculators.
+- `loss_function`: User-defined function that compares data and simulation and returns a loss value.
+# Note
+The user-defined `loss_function(data_segment, simulated_data)` must fully handle all
+required transformations, selections, or preprocessing steps (e.g., selecting variables,
+normalizing, log-transforming, etc.).
 - `data_CP`: Original data divided by change points.
 
 # Keyword Arguments
-- `initial_conditions`, `extra_data`, `num_steps`, `tspan`, `compare_variables`, `transformation`
+- `initial_conditions`, `extra_data`, `num_steps`, `tspan`
 
 # Returns
 - `total_loss`: Sum of segment losses.
@@ -87,7 +57,7 @@ function objective_function(
     chromosome, change_points, n_global, n_segment_specific, extract_parameters,
     parnames, model_function, simulate_model, loss_function, segment_loss, data_CP;
     initial_conditions=nothing, extra_data=nothing, num_steps=nothing,
-    tspan=nothing, compare_variables=nothing, transformation=identity
+    tspan=nothing
 )
     num_segments = length(change_points) + 1
     global_pars, segment_pars = extract_parameters(chromosome, n_global, n_segment_specific)
@@ -113,7 +83,7 @@ function objective_function(
             simulate_model(model_function, params, u0; tspan=tspan_segment) :
             simulate_model(model_function, params, u0; extra_data=u_segment, num_steps=idx_end - idx_start + 1)
 
-        total_loss += segment_loss(data_segment, simulated, loss_function; compare_variables=compare_variables, transformation=transformation)
+        total_loss += loss_function(data_segment, simulated, loss_function; compare_variables=compare_variables, transformation=transformation)
 
         u0 = simulated[:, end]  # Update initial condition for next segment
     end
@@ -134,7 +104,7 @@ function wrapped_obj_function(chromosome)
         chromosome, CP, n_global, n_segment_specific, extract_parameters,
         parnames, model_function, simulate_model, loss_function, segment_loss, data_CP;
         initial_conditions=initial_conditions, extra_data=extra_data,
-        num_steps=num_steps, tspan=tspan, compare_variables=compare_variables
+        num_steps=num_steps, tspan=tspan
     )
 end
 

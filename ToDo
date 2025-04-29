@@ -1,0 +1,15 @@
+29.04.2025
+
+What i have done?
+1. add _ before each module to have the new way of developing the package and the old one.
+   - using multipatch for defing and simulating the modules.
+   - Tested Model simulation module in _runtests.jl file.
+   - removed segmen_loss from objective function module and let users totally define the loss function by themselves.
+2. create the _runtests.jl in a very pretty way.
+3. Github page updated and push pull commits work properly.
+
+ToDo list:
+1. find a better way to handle different dataset slicing for different dimention and simulation diffierent models in segmentation for loop.
+2. After completing objective function module, test it in _runtests.jl.
+___________________________________________________________________________________________________________________________________________________
+30.04.2025
