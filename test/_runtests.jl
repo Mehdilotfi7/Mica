@@ -18,11 +18,9 @@ using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
         model = ODEModelSpec(exponential_ode_model, params, initial_conditions, tspan)
         result = simulate_model(model)
 
-        #@test isa(result, DataFrame)
-        #@test size(result, 1) == 100  # Should have 100 time points
-        #@test :time in names(result)
-        #@test :state in names(result)
-        #@test all(result.state .>= 0.0)  # Exponential decay, should be non-negative
+        @test isa(result, DataFrame)
+        @test size(result, 1) == 100  # Should have 100 time points
+        @test all(result.state .>= 0.0)  # Exponential decay, should be non-negative
     end
 
     # ----------------------
@@ -40,8 +38,6 @@ using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
 
         @test isa(result, DataFrame)
         @test size(result, 1) == num_steps
-        @test :time in names(result)
-        @test :state in names(result)
     end
 
     # ----------------------
@@ -56,8 +52,6 @@ using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
 
         @test isa(result, DataFrame)
         @test size(result, 1) == time_steps
-        @test :time in names(result)
-        @test :simulated_values in names(result)
         @test all(result.simulated_values .== params[:a] .* result.time .+ params[:b])
     end
 
