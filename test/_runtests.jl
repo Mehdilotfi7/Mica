@@ -2,6 +2,54 @@ using Test
 using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
 
 # =============================================================================
+# Test DataHandler Module
+# =============================================================================
+
+using Test
+using DataFrames
+using YourPackageName.DataHandler  # Replace with your actual module path
+
+@testset "DataHandler Module Tests" begin
+
+    @testset "DataFrame with Missing Values" begin
+        df = DataFrame(x = [1, 2, 3, 4, 5, 6],
+                       y = [10, 20, 30, 40, 50, 60])
+        mat, info = preprocess_data(df)
+        @test size(mat) == (6, 2)
+        @test !info.is_data_vector
+    end
+
+    @testset "Matrix Input" begin
+        mat_input = [1.0 2.0; 3.0 4.0; 5.0 6.0]
+        mat, info = preprocess_data(mat_input)
+        @test mat == mat_input
+        @test !info.is_data_vector
+    end
+
+    @testset "1D Vector Input" begin
+        vec = [1.0, 2.0, 3.0, 4.0]
+        mat, info = preprocess_data(vec)
+        @test mat == reshape(vec, :, 1)
+        @test info.is_data_vector
+    end
+
+    @testset "Vector of Vectors Input" begin
+        vvec = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+        mat, info = preprocess_data(vvec)
+        @test size(mat) == (2, 3)
+    end
+
+    @testset "DataFrame without Missing Values" begin
+        df_nomissing = DataFrame(a = 1:3, b = 4:6)
+        mat, info = preprocess_data(df_nomissing)
+        @test mat == Matrix(df_nomissing)
+        @test !info.is_data_vector
+    end
+
+end
+
+
+# =============================================================================
 # Test ModelSimulation Module
 # =============================================================================
 
