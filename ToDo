@@ -13,6 +13,7 @@ ToDo list:
 2. After completing objective function module, test it in _runtests.jl.
 ___________________________________________________________________________________________________________________________________________________
 30.04.2025
+What i have done?
 1. Thought about designing the objective function module with a simple and readible way and came up with this idea that i need to have a data
 handeling module as follows:  
    - It accepts datatype as vector, vector of vector, matrix and dataframe and return a matrix in all cases this make easier in objective function to 
@@ -20,3 +21,8 @@ handeling module as follows:
    - For now I skip the interpolation of missing values, but for later i can think of adding that as well.
 2. differnt length of vectors when we have vector of vectors arise mismatch issue when computation of loss value, so i need to give an example 
 in objective function module to guide the users.
+
+ToDo list:
+1. find a better way to handle different dataset slicing for different dimention and simulation diffierent models in segmentation for loop.
+2. After completing objective function module, test it in _runtests.jl.
+___________________________________________________________________________________________________________________________________________________
