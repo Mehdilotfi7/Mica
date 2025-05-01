@@ -1,5 +1,4 @@
 29.04.2025
-
 What i have done?
 1. add _ before each module to have the new way of developing the package and the old one.
    - using multipatch for defing and simulating the modules.
@@ -11,6 +10,7 @@ What i have done?
 ToDo list:
 1. find a better way to handle different dataset slicing for different dimention and simulation diffierent models in segmentation for loop.
 2. After completing objective function module, test it in _runtests.jl.
+___________________________________________________________________________________________________________________________________________________
 ___________________________________________________________________________________________________________________________________________________
 30.04.2025
 What i have done?
@@ -26,3 +26,18 @@ ToDo list:
 1. find a better way to handle different dataset slicing for different dimention and simulation diffierent models in segmentation for loop.
 2. After completing objective function module, test it in _runtests.jl.
 ___________________________________________________________________________________________________________________________________________________
+___________________________________________________________________________________________________________________________________________________
+01.05.2025
+What i have done?
+1. _ModelHandling module added tot ease the way of argument definind and not to have a need for model argument specification 
+I will use this inside objective function
+2. updated objective functoion:
+   - now it has lwss arguments.  initial_conditions=nothing, extra_data=nothing, num_steps=nothing, tspan=nothing removed and handled by _ModelHandling module 
+   - compare_variables=nothing, transformation=identity should be handled by user defined losss function.
+
+
+
+ToDo list:
+1. test _ModelHandling module and see if fits my goal
+2. understand segment_model function
+2. test objective function 

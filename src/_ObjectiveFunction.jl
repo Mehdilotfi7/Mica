@@ -54,42 +54,42 @@ normalizing, log-transforming, etc.).
 - `total_loss`: Sum of segment losses.
 """
 function objective_function(
-    chromosome, change_points, n_global, n_segment_specific, extract_parameters,
-    parnames, model_function, simulate_model, loss_function, segment_loss, data_CP;
-    initial_conditions=nothing, extra_data=nothing, num_steps=nothing,
-    tspan=nothing
+    chromosome, 
+    change_points, 
+    n_global, 
+    n_segment_specific, 
+    extract_parameters,
+    base_model::AbstractModelSpec,
+    simulate_model::Function, 
+    loss_function::Function, 
+    segment_loss::Function,
+    data_CP,
+    parnames
 )
+    constant_pars, segment_pars = extract_parameters(chromosome, n_global, n_segment_specific)
     num_segments = length(change_points) + 1
-    global_pars, segment_pars = extract_parameters(chromosome, n_global, n_segment_specific)
-
     total_loss = 0.0
-    u0 = initial_conditions
-    segment_indices = [0; change_points; (isnothing(num_steps) ? last(tspan) : size(data_CP, 1))]
+    u0 = get_initial_condition(base_model)
 
     for i in 1:num_segments
-        idx_start, idx_end = segment_indices[i]+1, segment_indices[i+1]
+        idx_start = i == 1 ? 1 : change_points[i - 1] + 1
+        idx_end = i <= length(change_points) ? change_points[i] : size(data_CP[1], 1)
+        data_segment = map(v -> v[idx_start:idx_end], data_CP)
 
-        data_segment = isnothing(num_steps) ?
-            data_CP[idx_start:idx_end] :
-            [d[idx_start:idx_end] for d in data_CP]
+        seg_pars_i = segment_pars[i]
+        model_segment = segment_model(base_model, seg_pars_i, parnames, idx_start, idx_end, u0)
 
-        tspan_segment = isnothing(num_steps) ? (idx_start-1, idx_end-1) : nothing
-        u_segment = isnothing(extra_data) ? nothing :
-            (eltype(extra_data) <: AbstractVector ? [e[idx_start:idx_end] for e in extra_data] : extra_data[idx_start:idx_end])
+        simulated_data = simulate_model(model_segment)
+        loss = segment_loss(data_segment, simulated_data, loss_function)
+        total_loss += loss
 
-        params = @LArray [global_pars; segment_pars[i]] parnames
-
-        simulated = isnothing(num_steps) ?
-            simulate_model(model_function, params, u0; tspan=tspan_segment) :
-            simulate_model(model_function, params, u0; extra_data=u_segment, num_steps=idx_end - idx_start + 1)
-
-        total_loss += loss_function(data_segment, simulated, loss_function; compare_variables=compare_variables, transformation=transformation)
-
-        u0 = simulated[:, end]  # Update initial condition for next segment
+        # Only needed if next segment depends on this output (like for ODEs)
+        u0 = simulated_data[!, end][1]  # update if needed based on model
     end
 
     return total_loss
 end
+
 
 # =============================================================================
 # Wrapped Objective (optional)
