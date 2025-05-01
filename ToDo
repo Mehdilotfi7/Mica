@@ -16,8 +16,7 @@ ________________________________________________________________________________
 What i have done?
 1. Thought about designing the objective function module with a simple and readible way and came up with this idea that i need to have a data
 handeling module as follows:  
-   - It accepts datatype as vector, vector of vector, matrix and dataframe and return a matrix in all cases this make easier in objective function to 
-   do segmentation with single line and avoid date type extraction.
+   - It accepts datatype as vector, vector of vector, matrix and dataframe and return a matrix in all cases this make easier in objective function to do segmentation with single line and avoid date type extraction.
    - For now I skip the interpolation of missing values, but for later i can think of adding that as well.
 2. differnt length of vectors when we have vector of vectors arise mismatch issue when computation of loss value, so i need to give an example 
 in objective function module to guide the users.
@@ -32,12 +31,15 @@ What i have done?
 1. _ModelHandling module added tot ease the way of argument definind and not to have a need for model argument specification 
 I will use this inside objective function
 2. updated objective functoion:
-   - now it has lwss arguments.  initial_conditions=nothing, extra_data=nothing, num_steps=nothing, tspan=nothing removed and handled by _ModelHandling module 
+   - now it has less arguments.  initial_conditions=nothing, extra_data=nothing, num_steps=nothing, tspan=nothing removed and handled by _ModelHandling module 
    - compare_variables=nothing, transformation=identity should be handled by user defined losss function.
-
-
 
 ToDo list:
 1. test _ModelHandling module and see if fits my goal
 2. understand segment_model function
-2. test objective function 
+3. test objective function 
+4. the current issue lies in simulation of model inside a give segment and data segmentation process for a segment and updating initial 
+conditions if applicable to a model
+   - what can I do is to handle them using a helper function for each and especially for segment simulation and data segmentation and 
+   pass them as arguments to the loss function 
+   - for initial conditions updating i need to also use a helper function similar to get initial condition function 

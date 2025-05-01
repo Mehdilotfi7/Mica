@@ -106,6 +106,130 @@ end
 end
 
 # =============================================================================
+# Test Model Handling + Objective Function Modules
+# =============================================================================
+
+@testset "Model Handling + Objective Function Tests" begin
+
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+    @testset "ODE Model" begin
+        ode_params = Dict(:p => [0.5])
+        ode_u0 = [1.0]
+        tspan = (0.0, 10.0)
+
+        base_model = ODEModelSpec(_ModelSimulation.exponential_ode_model, ode_params, ode_u0, tspan)
+        manager = ModelManager(base_model)
+
+        # Check initial condition accessor
+        @test get_initial_condition(manager) == ode_u0
+        @test get_model_type(manager) == "ODE"
+
+        # Simulate base model
+        sim = simulate_model(base_model)
+        @test isa(sim, DataFrame)
+
+        # Loss function: squared error to self
+        function loss_ode(true_data, pred_data)
+            sum((true_data[1] .- pred_data.state).^2)
+        end
+
+        # Define data and parameter extraction
+        data = [sim.state]
+        chrom = [0.5]
+        extract(chrom, n_g, n_s) = ([], [[chrom[1]]])
+
+        loss = objective_function(
+            chrom,
+            Int[], 0, 1, extract, [:p],
+            manager,
+            simulate_model,
+            loss_ode,
+            data
+        )
+        @test isapprox(loss, 0.0; atol=1e-4)
+    end
+
+    # =========================================================================
+    # Test Difference Model
+    # =========================================================================
+    @testset "Difference Model" begin
+        num_steps = 50
+        wind = rand(num_steps)
+        temp = rand(num_steps)
+        pars = Dict(:θ1 => 0.1, :θ2 => 0.2, :θ3 => 0.3, :θ4 => 0.4, :θ5 => 0.5, :θ6 => 0.6, :θ7 => 1.0)
+        ic = 10.0
+
+        base_model = DifferenceModelSpec(_ModelSimulation.example_difference_model, pars, ic, num_steps, (wind, temp))
+        manager = ModelManager(base_model)
+
+        # Basic checks
+        @test get_model_type(manager) == "Difference"
+        @test get_initial_condition(manager) == ic
+
+        sim = simulate_model(base_model)
+        @test isa(sim, DataFrame)
+
+        # Loss
+        function loss_diff(true_data, pred_data)
+            sum((true_data[1] .- pred_data.state).^2)
+        end
+
+        data = [sim.state]
+        chrom = collect(values(pars))  # [θ1, θ2, ..., θ7]
+        extract(chrom, n_g, n_s) = ([], [chrom])
+
+        loss = objective_function(
+            chrom,
+            Int[], 0, 7, extract, collect(keys(pars)),
+            manager,
+            simulate_model,
+            loss_diff,
+            data
+        )
+        @test isapprox(loss, 0.0; atol=1e-4)
+    end
+
+    # =========================================================================
+    # Test Regression Model
+    # =========================================================================
+    @testset "Regression Model" begin
+        pars = Dict(:a => 2.0, :b => 1.0)
+        time_steps = 30
+        base_model = RegressionModelSpec(_ModelSimulation.example_regression_model, pars, time_steps)
+        manager = ModelManager(base_model)
+
+        @test get_model_type(manager) == "Regression"
+        @test get_initial_condition(manager) === nothing
+
+        sim = simulate_model(base_model)
+        @test isa(sim, DataFrame)
+
+        # Loss
+        function loss_reg(true_data, pred_data)
+            sum((true_data[1] .- pred_data.simulated_values).^2)
+        end
+
+        data = [sim.simulated_values]
+        chrom = [2.0, 1.0]
+        extract(chrom, n_g, n_s) = ([], [chrom])
+
+        loss = objective_function(
+            chrom,
+            Int[], 0, 2, extract, [:a, :b],
+            manager,
+            simulate_model,
+            loss_reg,
+            data
+        )
+        @test isapprox(loss, 0.0; atol=1e-4)
+    end
+end
+
+
+
+# =============================================================================
 # Test ObjectiveFunction Module
 # =============================================================================
 
