@@ -38,7 +38,7 @@ ToDo list:
 1. test _ModelHandling module and see if fits my goal
 2. understand segment_model function
 3. test objective function 
-4. the current issue lies in simulation of model inside a give segment and data segmentation process for a segment and updating initial 
+4. the current issue lies in simulation of model inside a given segment and data segmentation process for a segment and updating initial 
 conditions if applicable to a model
    - what can I do is to handle them using a helper function for each and especially for segment simulation and data segmentation and 
    pass them as arguments to the loss function 

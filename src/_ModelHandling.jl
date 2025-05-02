@@ -44,6 +44,29 @@ get_initial_condition(manager::ModelManager{DifferenceModelSpec}) = manager.base
 get_initial_condition(manager::ModelManager{RegressionModelSpec}) = nothing
 
 # =============================================================================
+# Initial Condition Updating
+# =============================================================================
+
+"""
+`update_initial_condition(manager::ModelManager, sim_data::DataFrame)`
+
+Returns the updated initial condition for the next segment based on
+the output of the last segment's simulation.
+"""
+function update_initial_condition(manager::ModelManager{ODEModelSpec}, sim_data::DataFrame)
+    return [sim_data.state[end]]
+end
+
+function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data::DataFrame)
+    return sim_data.state[end]
+end
+
+function update_initial_condition(manager::ModelManager{RegressionModelSpec}, sim_data::DataFrame)
+    return nothing
+end
+
+
+# =============================================================================
 # Model Segmentation
 # =============================================================================
 

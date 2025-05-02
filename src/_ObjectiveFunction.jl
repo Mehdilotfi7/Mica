@@ -86,7 +86,7 @@ function objective_function(
         total_loss += segment_loss(segment_data, sim_data, loss_function)
 
         # Update initial condition if applicable
-        sim_data.state[end]
+        u0 = update_initial_condition(model_manager, sim_data)
     end
 
     return total_loss
