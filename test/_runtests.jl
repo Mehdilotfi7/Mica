@@ -148,6 +148,7 @@ end
             loss_ode,
             data
         )
+        
         @test isapprox(loss, 0.0; atol=1e-4)
     end
 

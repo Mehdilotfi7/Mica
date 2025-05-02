@@ -43,3 +43,14 @@ conditions if applicable to a model
    - what can I do is to handle them using a helper function for each and especially for segment simulation and data segmentation and 
    pass them as arguments to the loss function 
    - for initial conditions updating i need to also use a helper function similar to get initial condition function 
+___________________________________________________________________________________________________________________________________________________
+___________________________________________________________________________________________________________________________________________________
+02.05.2025
+What i have done?
+1. what can I do is to handle them using a helper function for each and especially for segment simulation and data segmentation and 
+   pass them as arguments to the loss function  -----> done
+2. for initial conditions updating i need to also use a helper function similar to get initial condition function ----> done
+
+ToDo list:
+in the current version of runtests.jl in testing of _ModelHandling mudule it just tests the simulate_model not its helper functtions
+also i need to know the rule of parnames.

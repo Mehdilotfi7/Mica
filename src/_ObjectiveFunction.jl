@@ -2,7 +2,12 @@ module _ObjectiveFunction
 
 using DataFrames
 using LabelledArrays
+using .._ModelHandling
+using .._ModelSimulation
+import .._ModelSimulation: simulate_model
+import .._ModelHandling: get_initial_condition, segment_model, update_initial_condition
 
+export objective_function
 # =============================================================================
 # extract_parameters Function
 # =============================================================================
@@ -54,13 +59,10 @@ function objective_function(
     change_points::Vector{Int}, 
     n_global::Int, 
     n_segment_specific::Int, 
-    extract_parameters::Function,
     parnames::Vector{Symbol}, 
     model_manager::ModelManager, 
-    simulate_model::Function,
     loss_function::Function,
-    segment_loss::Function,
-    data::Any
+    data::Matrix{Float64}
 )
     constant_pars, segment_pars_list = extract_parameters(chromosome, n_global, n_segment_specific)
     total_loss = 0.0
@@ -70,20 +72,17 @@ function objective_function(
     u0 = get_initial_condition(model_manager)
 
     for i in 1:num_segments
-        idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
-        idx_end   = (i > length(change_points)) ? length(data[1]) : change_points[i]
 
-        # Slice data for current segment
-        segment_data = (eltype(data) <: AbstractVector) ? 
-            [vec[idx_start:idx_end] for vec in data] : 
-            data[idx_start:idx_end]
+        idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
+        idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
+        segment_data = data[:, idx_start:idx_end]
 
         seg_pars = segment_pars_list[i]
         all_pars = vcat(constant_pars, seg_pars)
         model_spec = segment_model(model_manager, all_pars, parnames, idx_start, idx_end, u0)
 
         sim_data = simulate_model(model_spec)
-        total_loss += segment_loss(segment_data, sim_data, loss_function)
+        total_loss += loss_function(segment_data, sim_data)
 
         # Update initial condition if applicable
         u0 = update_initial_condition(model_manager, sim_data)
