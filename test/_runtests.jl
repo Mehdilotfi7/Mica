@@ -106,7 +106,7 @@ end
 end
 
 # =============================================================================
-# Test Model Handling + Objective Function Modules
+# Test Model Handling Module
 # =============================================================================
 
 @testset "Model Handling + Objective Function Tests" begin
@@ -126,30 +126,17 @@ end
         @test get_initial_condition(manager) == ode_u0
         @test get_model_type(manager) == "ODE"
 
-        # Simulate base model
+        # segment_model
+        seg_pars = [0.05] # update for ODE
+        parnames = [:p]
+        new_ode_model = segment_model(manager, seg_pars, parnames, 0, 2, [1.0])
+        @test new_ode_model.params[:p] == 0.05
+        @test new_ode_model.tspan == (0, 2.0)
+
+        # Update initial condition
         sim = simulate_model(base_model)
         @test isa(sim, DataFrame)
-
-        # Loss function: squared error to self
-        function loss_ode(true_data, pred_data)
-            sum((true_data[1] .- pred_data.state).^2)
-        end
-
-        # Define data and parameter extraction
-        data = [sim.state]
-        chrom = [0.5]
-        extract(chrom, n_g, n_s) = ([], [[chrom[1]]])
-
-        loss = objective_function(
-            chrom,
-            Int[], 0, 1, extract, [:p],
-            manager,
-            simulate_model,
-            loss_ode,
-            data
-        )
-        
-        @test isapprox(loss, 0.0; atol=1e-4)
+        @test update_initial_condition(manager, sim) == [sim.state[end]]
     end
 
     # =========================================================================
@@ -162,34 +149,23 @@ end
         pars = Dict(:θ1 => 0.1, :θ2 => 0.2, :θ3 => 0.3, :θ4 => 0.4, :θ5 => 0.5, :θ6 => 0.6, :θ7 => 1.0)
         ic = 10.0
 
-        base_model = DifferenceModelSpec(_ModelSimulation.example_difference_model, pars, ic, num_steps, (wind, temp))
-        manager = ModelManager(base_model)
+        diff_model = DifferenceModelSpec(_ModelSimulation.example_difference_model, pars, ic, num_steps, (wind, temp))
+        diff_manager = ModelManager(diff_model)
 
-        # Basic checks
-        @test get_model_type(manager) == "Difference"
-        @test get_initial_condition(manager) == ic
+        # Check initial condition accessor
+        @test get_model_type(diff_manager) == "Difference"
+        @test get_initial_condition(diff_manager) == ic
 
-        sim = simulate_model(base_model)
-        @test isa(sim, DataFrame)
+        # segment_model
+        seg_pars = fill(0.2, 7) # update for Difference
+        parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
+        new_diff_model = segment_model(diff_manager, seg_pars, parnames, 10, 20, 0.0)
+        @test new_diff_model.num_steps == 11
+        @test new_diff_model.extra_data[1] == wind[10:20]
 
-        # Loss
-        function loss_diff(true_data, pred_data)
-            sum((true_data[1] .- pred_data.state).^2)
-        end
-
-        data = [sim.state]
-        chrom = collect(values(pars))  # [θ1, θ2, ..., θ7]
-        extract(chrom, n_g, n_s) = ([], [chrom])
-
-        loss = objective_function(
-            chrom,
-            Int[], 0, 7, extract, collect(keys(pars)),
-            manager,
-            simulate_model,
-            loss_diff,
-            data
-        )
-        @test isapprox(loss, 0.0; atol=1e-4)
+        # Update initial condition
+        diff_sim = simulate_model(diff_model)
+        @test update_initial_condition(diff_manager, diff_sim) == diff_sim.state[end]
     end
 
     # =========================================================================
@@ -198,33 +174,23 @@ end
     @testset "Regression Model" begin
         pars = Dict(:a => 2.0, :b => 1.0)
         time_steps = 30
-        base_model = RegressionModelSpec(_ModelSimulation.example_regression_model, pars, time_steps)
-        manager = ModelManager(base_model)
+        reg_model = RegressionModelSpec(_ModelSimulation.example_regression_model, pars, time_steps)
+        reg_manager = ModelManager(reg_model)
 
-        @test get_model_type(manager) == "Regression"
-        @test get_initial_condition(manager) === nothing
+        #Check initial condition accessor
+        @test get_model_type(reg_manager) == "Regression"
+        @test get_initial_condition(reg_manager) === nothing
 
-        sim = simulate_model(base_model)
-        @test isa(sim, DataFrame)
+        # segment_model
+        seg_pars = [3.0, 7.0]
+        parnames = [:a, :b]
+        new_reg_model = segment_model(reg_manager, seg_pars, parnames, 1, 10, nothing)
+        @test new_reg_model.time_steps == 10
+        @test new_reg_model.params[:b] == 7.0
 
-        # Loss
-        function loss_reg(true_data, pred_data)
-            sum((true_data[1] .- pred_data.simulated_values).^2)
-        end
-
-        data = [sim.simulated_values]
-        chrom = [2.0, 1.0]
-        extract(chrom, n_g, n_s) = ([], [chrom])
-
-        loss = objective_function(
-            chrom,
-            Int[], 0, 2, extract, [:a, :b],
-            manager,
-            simulate_model,
-            loss_reg,
-            data
-        )
-        @test isapprox(loss, 0.0; atol=1e-4)
+        # Update initial condition
+        reg_sim = simulate_model(reg_model)
+        @test update_initial_condition(reg_manager, reg_sim) === nothing
     end
 end
 
