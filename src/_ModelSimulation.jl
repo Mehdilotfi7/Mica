@@ -127,7 +127,7 @@ function exponential_ode_model(params, tspan, u0)
     end
 
     prob = ODEProblem(ode!, u0, tspan, params[:p])
-    sol = solve(prob, Tsit5(), saveat=range(tspan[1], tspan[2], length=100))
+    sol = solve(prob, Tsit5(), saveat=1.0)
 
     return DataFrame(time=sol.t, state=sol[1, :])
 end

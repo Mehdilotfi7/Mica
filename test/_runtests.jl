@@ -202,51 +202,134 @@ end
 
 @testset "ObjectiveFunction Tests" begin
 
-    # Dummy loss function (mean squared error)
-    mse(y, ŷ) = mean((y .- ŷ).^2)
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+    @testset "ODE Model" begin
 
-    @testset "segment_loss 1D test" begin
-        true_data = [1.0, 2.0, 3.0]
-        predicted_data = [1.0, 2.5, 2.5]
-        loss = segment_loss(true_data, predicted_data, mse)
-        @test isapprox(loss, 0.1666; atol=1e-3)
-    end
+        # Define parameters
+        p = 0.5
+        ic = [1.0]
+        tspan = (0.0, 10.0)
+        parnames = [:p]
+        true_pars = [p]
 
-    @testset "extract_parameters test" begin
-        chrom = [1.0, 2.0, 3.0, 4.0, 5.0]
-        global_parameters, segment_parameters = extract_parameters(chrom, 2, 3)
-        @test global_parameters == [1.0, 2.0]
-        @test segment_parameters == [[3.0, 4.0, 5.0]]
-    end
-
-    @testset "objective_function test - regression" begin
-        model_func = example_regression_model
-        sim_func = simulate_model
-
-        parnames = [:a, :b]
-        chrom = [2.0, 5.0]  # slope 2, intercept 5
-        CP = Int[]  # no change points
-        n_global = 0
-        n_segment_specific = 2
-        initial_conditions = nothing
-        num_steps = 10
-        tspan = nothing
-        extra_data = nothing
-        time = 10
-
-        data = model_func(Dict(:a => 2.0, :b => 5.0), time)
-        data_CP = data.simulated_values  # pass only values to loss function
-
-        loss_fn = mse
-        loss = objective_function(
-            chrom, CP, n_global, n_segment_specific, extract_parameters,
-            parnames, model_func, sim_func, loss_fn, segment_loss, data_CP;
-            num_steps=num_steps,
-            initial_conditions=initial_conditions,
-            extra_data=extra_data,
-            compare_variables=nothing
+        # Define model spec
+        ode_spec = ODEModelSpec(
+           _ModelSimulation.exponential_ode_model,
+           Dict(:p => p),
+           ic,
+           tspan
         )
-        @test isapprox(loss, 0.0; atol=1e-5)
+
+        observed_df = simulate_model(ode_spec)
+        observed_data = reshape(observed_df.state, 1, :)
+
+        # Wrap in manager
+        manager = ModelManager(ode_spec)
+ 
+        # Call objective function
+        chromosome = copy(true_pars)
+        loss = objective_function(
+            chromosome,
+            Int[],
+            0,
+            length(parnames),
+            parnames,
+            manager,
+            (obs, sim) -> sum((obs .- sim.state').^2),
+            observed_data
+        )
+
+        @test loss ≈ 0.0 atol=1e-8
+
     end
 
+    # =========================================================================
+    # Test Difference Model
+    # =========================================================================
+    @testset "Difference Model" begin
+        num_steps = 50
+        wind = rand(num_steps)
+        temp = rand(num_steps)
+        ic = 10.0
+  
+        # True parameters
+        true_pars = [
+        0.1, 0.2, 0.3,
+        0.4, 0.5, 0.6,
+        1.0
+        ]
+        parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
+
+        # Simulate expected state
+        base_model = DifferenceModelSpec(
+           _ModelSimulation.example_difference_model,
+           Dict(zip(parnames, true_pars)),
+           ic,
+           num_steps,
+           (wind, temp)
+        )
+        expected_data = simulate_model(base_model)
+        observed_data = reshape(expected_data.state, 1, :)
+
+        # Wrap model in manager
+        manager = ModelManager(base_model)
+
+        # Chromosome = all params are segment-specific, no constants
+        chromosome = copy(true_pars)
+
+        # Evaluate objective
+        loss = objective_function(
+           chromosome,
+           Int[],          # No change points
+           2,              
+           5,
+           parnames,
+           manager,
+           (obs, sim) -> sum((obs .- sim.state').^2),
+           observed_data
+           )
+
+        @test loss ≈ 0.0 atol=1e-8
+  end
+
+    # =========================================================================
+    # Test Regression Model
+    # =========================================================================
+    @testset "Regression Model" begin
+
+        a, b = 5.0, 2.0
+        time_steps = 20
+        parnames = [:a, :b]
+        true_pars = [a, b]
+
+        # Define regression model
+        reg_model = RegressionModelSpec(
+           _ModelSimulation.example_regression_model,
+           Dict(:a => a, :b => b),
+           time_steps
+       )
+
+       observed_df = simulate_model(reg_model)
+       observed_data = reshape(observed_df.simulated_values, 1, :)
+
+       # Wrap in ModelManager
+       manager = ModelManager(reg_model)
+
+       chromosome = copy(true_pars)
+       loss = objective_function(
+           chromosome,
+           Int[],
+           0,
+           length(parnames),
+           parnames,
+           manager,
+           (obs, sim) -> sum((obs .- sim.simulated_values').^2),
+           observed_data
+        )
+
+    @test loss ≈ 0.0 atol=1e-8
+
+    end
 end

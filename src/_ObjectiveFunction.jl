@@ -77,6 +77,15 @@ function objective_function(
         idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
         segment_data = data[:, idx_start:idx_end]
 
+        #@show i
+        #@show constant_pars, segment_pars_list
+        #@show num_segments
+        #@show length(segment_data)
+        #@assert segment_data == data
+        @show (idx_start, idx_end)
+
+        
+
         seg_pars = segment_pars_list[i]
         all_pars = vcat(constant_pars, seg_pars)
         model_spec = segment_model(model_manager, all_pars, parnames, idx_start, idx_end, u0)
@@ -101,10 +110,14 @@ Convenient closure to call `objective_function` with fixed outer parameters.
 """
 function wrapped_obj_function(chromosome)
     return objective_function(
-        chromosome, CP, n_global, n_segment_specific, extract_parameters,
-        parnames, model_function, simulate_model, loss_function, segment_loss, data_CP;
-        initial_conditions=initial_conditions, extra_data=extra_data,
-        num_steps=num_steps, tspan=tspan
+        chromosome, 
+        change_points, 
+        n_global, 
+        n_segment_specific, 
+        parnames, 
+        model_manager, 
+        loss_function,
+        data
     )
 end
 
