@@ -1,4 +1,5 @@
 using Test
+using Evolutionary
 using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
 
 # =============================================================================
@@ -332,4 +333,122 @@ end
     @test loss ≈ 0.0 atol=1e-8
 
     end
+end
+
+# =============================================================================
+# Test ChangePointDetection Module
+# =============================================================================
+
+@testset "ChangePointDetection Tests" begin
+
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+
+    @testset "ODE Model" begin
+        # Create synthetic ODE test model
+        p = -0.5
+        ic = [1.0]
+        tspan = (0.0, 10.0)
+        parnames = [:p]
+
+        # Define ModelManager for ODE
+        ode_spec = ODEModelSpec(
+           _ModelSimulation.exponential_ode_model,
+           Dict(:p => p),
+           ic,
+           tspan
+        )
+        manager = ModelManager(ode_spec)
+        # Generate synthetic observation
+        obs_df = simulate_model(ode_spec)
+        data = reshape(obs_df.state, 1, :)
+        @testset "optimize_with_changepoints" begin
+            chromosome = [-0.5]
+            bounds = ([-1.0], [0.0])
+            CP = Int[]
+            n_global = 0
+            n_segment_specific = 1
+        
+            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+            crossoverRate=0.6, mutation = gaussian(0.0001))
+        
+            loss, best = optimize_with_changepoints(
+                objective_function,
+                chromosome,
+                CP,
+                bounds,
+                ga,
+                n_global,
+                n_segment_specific,
+                parnames,
+                manager,
+                (obs, sim) -> sum((obs .- sim.state').^2),
+                data
+            )
+        
+            @test isfinite(loss)
+            @test length(best) == 1
+        end
+        @testset "update_bounds!" begin
+            chromosome = [-0.5]
+            bounds = ([-1.0], [0.0])
+            n_global = 0
+            n_segment_specific = 1
+        
+            update_bounds!(
+                chromosome,
+                bounds,
+                n_global,
+                n_segment_specific,
+                extract_parameters
+            )
+        
+            @test length(chromosome) == 2
+            @test length(bounds[1]) == 2
+            @test length(bounds[2]) == 2
+        end
+        @testset "evaluate_segment" begin
+            chromosome = [-0.5, -0.5]  # Already updated
+            bounds = ([-1.0, -1.0], [0.0, 0.0])
+            CP = [5]
+            a, b = 1, size(data, 2)
+            step = 2
+            min_length = 5
+            pen = 1.0
+        
+            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            ga = ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+            crossoverRate=0.6, mutation = gaussian(0.0001))
+        
+            x, y = evaluate_segment(
+                objective_function,
+                a, b, CP, bounds, chromosome, ga, pen, min_length, step,
+                0, 1, parnames, manager, loss_fn, data
+            )
+        
+            @test length(x) == length(y)
+            @test all(isfinite, x)
+        end
+                         
+
+    end
+
+    # =========================================================================
+    # Test Difference Model
+    # =========================================================================
+
+    @testset "Difference Model" begin
+
+    end
+
+    # =========================================================================
+    # Test Regression Model
+    # =========================================================================
+
+    @testset "Regression Model" begin
+
+    end
+
 end

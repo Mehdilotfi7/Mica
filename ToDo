@@ -54,3 +54,16 @@ What i have done?
 ToDo list:
 in the current version of runtests.jl in testing of _ModelHandling mudule it just tests the simulate_model not its helper functtions
 also i need to know the rule of parnames.
+___________________________________________________________________________________________________________________________________________________
+___________________________________________________________________________________________________________________________________________________
+13.05.2025
+What i have done?
+1. _ModelHandling mudule helper functions are tested now for three types of models.
+2.  now I know the rule of parnames. and that is naming the parameters in each segment.
+3. objective function module helper functions are tested now.
+4. _ChangePointDetection module updated to use model handeling and objective function module and have less arguments to find out the model type, ....
+5. - optimize_with_changepoints and update_bounds! are tested with no change point option.
+
+ToDo list:
+1. test evaluate_segment function with some change points for all three models.
+2. test detect_changepoints for all three models and see the run time as well.

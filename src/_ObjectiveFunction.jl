@@ -82,7 +82,7 @@ function objective_function(
         #@show num_segments
         #@show length(segment_data)
         #@assert segment_data == data
-        @show (idx_start, idx_end)
+        #@show (idx_start, idx_end)
 
         
 

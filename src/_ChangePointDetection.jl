@@ -125,7 +125,7 @@ function detect_changepoints(
     data::Matrix{Float64},
     initial_chromosome::Vector{Float64},
     bounds::Tuple{Vector{Float64}, Vector{Float64}},
-    ga::Evolutionary.AbstractGA,
+    ga, # i should define type later
     min_length::Int, step::Int;
     pen::Float64=log(n)
 )
