@@ -53,15 +53,15 @@ get_initial_condition(manager::ModelManager{RegressionModelSpec}) = nothing
 Returns the updated initial condition for the next segment based on
 the output of the last segment's simulation.
 """
-function update_initial_condition(manager::ModelManager{ODEModelSpec}, sim_data::DataFrame)
-    return [sim_data.state[end]]
+function update_initial_condition(manager::ModelManager{ODEModelSpec}, sim_data)
+    return [sim_data[end]]
 end
 
-function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data::DataFrame)
+function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data)
     return sim_data.state[end]
 end
 
-function update_initial_condition(manager::ModelManager{RegressionModelSpec}, sim_data::DataFrame)
+function update_initial_condition(manager::ModelManager{RegressionModelSpec}, sim_data)
     return nothing
 end
 

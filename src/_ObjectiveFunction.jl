@@ -94,6 +94,7 @@ function objective_function(
         sim_data = simulate_model(model_spec)
         total_loss += loss_function(segment_data, sim_data)
 
+        #@show typeof(sim_data)
         # Update initial condition if applicable
         u0 = update_initial_condition(model_manager, sim_data)
     end

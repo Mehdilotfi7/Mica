@@ -68,11 +68,21 @@ ToDo list:
 1. test evaluate_segment function with some change points for all three models.
 2. test detect_changepoints for all three models and see the run time as well.
 
+___________________________________________________________________________________________________________________________________________________
+___________________________________________________________________________________________________________________________________________________
+14.05.2025
+What i have done?
+1. evaluate_segment function for an ode model.
+2. example folder created, and example_ODE.jl is being tested.
+3. future version features specified 
 
-
-
-
-
+ToDo list:
+1. create examole_Difference.jl and example_Regression.jl files to test two other methods than ODE model.
+2. Think about accepted data type from users ---> sould i use data handler module or restrict them to enter data as a Matrix.
+3. I need to double check all functions arguments type.
+4. move extra files to another folder just keep modules files in this directory.
+5. finalize the package.
+6. Find out the real time docstring monitoring.
 
 
 
