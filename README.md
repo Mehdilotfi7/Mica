@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="docs/TSCPDetector2.png" width="200" />
+<img src="images/TSCPDetector2.png" width="200" />
 </p>
 
 <p align="center">
@@ -177,8 +177,9 @@ initial_conditions, tspan,
 initial_chromosome, lower_bound, upper_bound, ga, update_chromosome_bounds!,
 min_length, step, penlty)
 ```
-
-![My Algorithm Icon](Covsim.png)
+<p align="center">
+<img src="images/Covsim.png" width="400" />
+</p>
 
 ### Wind Turbine Cooling System Using Difference Equations
 
@@ -223,7 +224,10 @@ extra_data = extra_data,
 num_steps = num_steps)
 ```
 
-![My Algorithm Icon](Turbine_CPD_2sub.png)
+<p align="center">
+<img src="images/Turbine_CPD_2sub.png" width="400" />
+</p>
+
 
 ## Package_development
 This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2024. It is currently being maintained and extended by Mehdi Lotfi.
