@@ -84,6 +84,7 @@ function objective_function(
         #@assert segment_data == data
         #@show (idx_start, idx_end)
 
+
         
 
         seg_pars = segment_pars_list[i]

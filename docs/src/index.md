@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = FirstPkg
+CurrentModule = TSCPDetector
 ```
 
-# FirstPkg
+# TSCPDetector
 
-Documentation for [FirstPkg](https://github.com/Mehdilotfi7/FirstPkg.jl).
+Documentation for [TSCPDetector](https://github.com/Mehdilotfi7/TSCPDetector.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [FirstPkg]
+Modules = [TSCPDetector]
 ```

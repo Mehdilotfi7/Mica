@@ -349,7 +349,7 @@ end
         # Create synthetic ODE test model
         p = -0.5
         ic = [1.0]
-        tspan = (0.0, 10.0)
+        tspan = (1.0, 100.0)
         parnames = [:p]
 
         # Define ModelManager for ODE
@@ -363,6 +363,8 @@ end
         # Generate synthetic observation
         obs_df = simulate_model(ode_spec)
         data = reshape(obs_df.state, 1, :)
+
+        # optimize_with_changepoints
         @testset "optimize_with_changepoints" begin
             chromosome = [-0.5]
             bounds = ([-1.0], [0.0])
@@ -391,6 +393,8 @@ end
             @test isfinite(loss)
             @test length(best) == 1
         end
+
+        # update_bounds!
         @testset "update_bounds!" begin
             chromosome = [-0.5]
             bounds = ([-1.0], [0.0])
@@ -409,13 +413,15 @@ end
             @test length(bounds[1]) == 2
             @test length(bounds[2]) == 2
         end
+
+        # evaluate_segment
         @testset "evaluate_segment" begin
-            chromosome = [-0.5, -0.5]  # Already updated
-            bounds = ([-1.0, -1.0], [0.0, 0.0])
+            chromosome = [-0.5, -0.5, -0.5]  # Already updated
+            bounds = ([-1.0, -1.0, -1.0], [0.0, 0.0, 0.0])
             CP = [5]
             a, b = 1, size(data, 2)
             step = 2
-            min_length = 5
+            min_length = 10
             pen = 1.0
         
             loss_fn(obs, sim) = sum((obs .- sim.state').^2)
@@ -432,22 +438,6 @@ end
             @test all(isfinite, x)
         end
                          
-
-    end
-
-    # =========================================================================
-    # Test Difference Model
-    # =========================================================================
-
-    @testset "Difference Model" begin
-
-    end
-
-    # =========================================================================
-    # Test Regression Model
-    # =========================================================================
-
-    @testset "Regression Model" begin
 
     end
 

@@ -1,14 +1,14 @@
-using FirstPkg
+using TSCPDetector
 using Documenter
 
-DocMeta.setdocmeta!(FirstPkg, :DocTestSetup, :(using FirstPkg); recursive=true)
+DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
 
 makedocs(;
-    modules=[FirstPkg],
+    modules=[TSCPDetector],
     authors="Mehdi Lotfi",
-    sitename="FirstPkg.jl",
+    sitename="TSCPDetector.jl",
     format=Documenter.HTML(;
-        canonical="https://Mehdilotfi7.github.io/FirstPkg.jl",
+        canonical="https://Mehdilotfi7.github.io/TSCPDetector.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -18,6 +18,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/Mehdilotfi7/FirstPkg.jl",
+    repo="github.com/Mehdilotfi7/TSCPDetector.jl",
     devbranch="main",
 )

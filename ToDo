@@ -67,3 +67,27 @@ What i have done?
 ToDo list:
 1. test evaluate_segment function with some change points for all three models.
 2. test detect_changepoints for all three models and see the run time as well.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+___________________________________________________________________________________________________________________________________________________
+___________________________________________________________________________________________________________________________________________________
+I will leave these features for next version
+1. visualisation of change point detection
+2. using GPU option
+3. potential parallelisation 
+4. support more models (ANN,bayesian models, ...)
+5. online change point detection 
+6. using interpolation if there are missings in data
+

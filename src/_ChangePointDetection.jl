@@ -40,7 +40,7 @@ function optimize_with_changepoints(
     data::Matrix{Float64};
     options=Evolutionary.Options(show_trace=false)
 )
-    wrapped_obj = chrom -> objective_function(
+    wrapped_obj(chrom) = objective_function(
         chrom, CP, n_global, n_segment_specific, parnames,
         model_manager, loss_function, data
     )
@@ -89,6 +89,7 @@ function evaluate_segment(
     y = Vector{Vector{Float64}}()
     for j in (a + min_length):step:(b - min_length)
         new_cp = sort([CP; j])
+        @show new_cp
         loss, best = optimize_with_changepoints(
             objective_function, chromosome, new_cp, bounds, ga,
             n_global, n_segment_specific, parnames,
