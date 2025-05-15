@@ -77,7 +77,7 @@ function objective_function(
         idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
         segment_data = data[:, idx_start:idx_end]
 
-        #@show i
+        #@show i, (idx_start,idx_end)
         #@show constant_pars, segment_pars_list
         #@show num_segments
         #@show length(segment_data)
@@ -89,14 +89,18 @@ function objective_function(
 
         seg_pars = segment_pars_list[i]
         all_pars = vcat(constant_pars, seg_pars)
+        #@show (model_manager, all_pars, parnames, idx_start, idx_end, u0)
         model_spec = segment_model(model_manager, all_pars, parnames, idx_start, idx_end, u0)
+        #@show model_spec
 
         sim_data = simulate_model(model_spec)
+        #@show typeof(sim_data), size(sim_data), sim_data[:,end]
         total_loss += loss_function(segment_data, sim_data)
 
         #@show typeof(sim_data)
         # Update initial condition if applicable
         u0 = update_initial_condition(model_manager, sim_data)
+        #@show u0
     end
 
     return total_loss
@@ -124,3 +128,4 @@ function wrapped_obj_function(chromosome)
 end
 
 end # module
+

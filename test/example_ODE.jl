@@ -140,7 +140,7 @@ function example_ode_model(params::Dict, tspan::Tuple{Float64, Float64}, u0::Vec
     γ = params[:γ]
     prob = ODEProblem(sirmodel!, u0, tspan, [β, γ])
     sol = solve(prob, Tsit5(), saveat=1.0)
-    return sol[2:2,:]  # returns matrix-like solution
+    return sol[:,:]  # returns matrix-like solution
 end
 
 # ----------------------------
@@ -186,8 +186,10 @@ end
 # Loss function
 # ----------------------------
 function loss_function(observed, simulated)
-    #simulated = simulated[2:2,:]
     #@show size(observed), size(simulated)
+    simulated = simulated[2:2,:]
+    #@show size(observed), size(simulated)
+    #@show typeof(observed), typeof(simulated)
     #@assert size(observed) == size(simulated) "Dimension mismatch in loss function."
     return sqrt(sum((observed .- simulated).^2))
 end
@@ -225,7 +227,7 @@ end
     data_M = reshape(Float64.(data), 1, :)
     n = length(data_M)
 
-    simulate_model(ode_spec)
+    simulate_model(ode_spec)[:,end]
 
     detected_cp, params = detect_changepoints(
         objective_function,

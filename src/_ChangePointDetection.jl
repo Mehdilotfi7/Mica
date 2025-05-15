@@ -44,6 +44,8 @@ function optimize_with_changepoints(
         chrom, CP, n_global, n_segment_specific, parnames,
         model_manager, loss_function, data
     )
+    @show chromosome
+    @show bounds
     result = Evolutionary.optimize(wrapped_obj, BoxConstraints(bounds...), chromosome, ga, options)
     return Evolutionary.minimum(result), Evolutionary.minimizer(result)
 end
@@ -134,22 +136,25 @@ function detect_changepoints(
     CP = Int[]
     @show CP
 
-    loss_val, best_params = optimize_with_changepoints(
-        objective_function, initial_chromosome, CP, bounds, ga,
-        n_global, n_segment_specific, parnames,
-        model_manager, loss_function, data
-    )
-    @show best_params
+    #loss_val, best_params = optimize_with_changepoints(
+    #    objective_function, initial_chromosome, CP, bounds, ga,
+    #    n_global, n_segment_specific, parnames,
+    #    model_manager, loss_function, data
+    #)
+    #@show best_params
+    loss_val = 1000
 
-    update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, _ObjectiveFunction.extract_parameters)
+    update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
 
     while !isempty(tau)
+        @show tau
         a, b = pop!(tau)
         x, y = evaluate_segment(
             objective_function, a, b, CP, bounds, initial_chromosome, ga, pen, min_length, step,
             n_global, n_segment_specific, parnames,
             model_manager, loss_function, data
         )
+        @show x,y
         if !isempty(x)
             minval, idx = findmin(x)
             if minval < loss_val
@@ -158,7 +163,7 @@ function detect_changepoints(
                 CP = sort(CP)
                 loss_val = minval
                 best_params = y[idx]
-                update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, _ObjectiveFunction.extract_parameters)
+                update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
                 if chpt != a + min_length
                     push!(tau, (a, chpt))
                 end

@@ -54,7 +54,7 @@ Returns the updated initial condition for the next segment based on
 the output of the last segment's simulation.
 """
 function update_initial_condition(manager::ModelManager{ODEModelSpec}, sim_data)
-    return [sim_data[end]]
+    return sim_data[:,end]
 end
 
 function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data)
@@ -91,6 +91,8 @@ function segment_model(
 )
     model = manager.base_model
     new_params = deepcopy(model.params)
+    #@show parnames
+    #@show seg_pars
     for (i, name) in enumerate(parnames)
         new_params[name] = seg_pars[i]
     end
