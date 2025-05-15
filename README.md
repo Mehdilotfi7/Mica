@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="images/ModelCP.png" width="200" />
+<img src="images/ModelCP1.png" width="200" />
 </p>
 
 <p align="center">
