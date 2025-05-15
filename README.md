@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="images/mocha.png" width="300" />
+<img src="images/mocha.svg" width="300" />
 </p>
 
 <p align="center">

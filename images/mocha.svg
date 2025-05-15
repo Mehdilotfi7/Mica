@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="80.556152"
+   version="1.1"
+   width="117.06396"
+   id="svg14"
+   sodipodi:docname="modelchangepoints_logo.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   inkscape:export-filename="modelchangepoints_logo.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:export-bgcolor="#000000e3"
+     inkscape:zoom="1.3730691"
+     inkscape:cx="-6749.8422"
+     inkscape:cy="-3407.3303"
+     inkscape:window-width="2560"
+     inkscape:window-height="1440"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg14"
+     showguides="true">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="117.06396"
+       height="80.556152"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient43"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop42" />
+      <stop
+         style="stop-color:#05b1fc;stop-opacity:1;"
+         offset="1"
+         id="stop43" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient43"
+       id="linearGradient286-9-3-3-0-4-5"
+       x1="-6898.7163"
+       y1="-3227.2007"
+       x2="-6582.2046"
+       y2="-3227.2007"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <text
+     fill="url(#grad1)"
+     style="font-size:24px;font-family:sans-serif;letter-spacing:0.999998px;text-anchor:middle;fill:url(#linearGradient286-9-3-3-0-4-5);fill-opacity:1;stroke-width:0.999998"
+     text-anchor="middle"
+     x="58.100098"
+     y="79.352051"
+     id="text14-9-3-2-3-6-0"
+     inkscape:export-filename="g31-0.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32px;font-family:'American Typewriter';-inkscape-font-specification:'American Typewriter, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:url(#linearGradient286-9-3-3-0-4-5);fill-opacity:1;stroke:#ffffff;stroke-opacity:1"
+       id="tspan32-5-6-6-8-4-7">MoChA</tspan></text>
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#ffffff;stroke-width:2.57245;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     d="M 2.4097,50.216 22.911,26.0146 26.9856,41.1171 51.1141,15.9274 57.1017,34.345 78.3229,6.414 87.0388,18.8387 103.6258,0.8725"
+     id="path37-8-3" />
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#0036db;stroke-width:1;stroke-dasharray:2, 1;stroke-dashoffset:0;stroke-opacity:1"
+     d="M 35.3622,53.3063 35.2065,3.3941"
+     id="path10-7-0-21"
+     sodipodi:nodetypes="cc" />
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#0036db;stroke-width:1;stroke-dasharray:2, 1;stroke-dashoffset:0;stroke-opacity:1"
+     d="M 71.4404,53.3125 71.2847,3.4003"
+     id="path10-7-0-2-4"
+     sodipodi:nodetypes="cc" />
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#ff0000;stroke-width:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 0.3405,54.6791 35.0629,0.064"
+     id="path11-64" />
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#008000;stroke-width:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 35.3986,54.7398 36.1177,0.01"
+     id="path11-64-3" />
+  <path
+     style="fill:#000000;fill-opacity:0;stroke:#8f6ed5;stroke-width:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 71.511,54.7542 35.3505,0.064"
+     id="path11-64-0" />
+</svg>
