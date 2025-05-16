@@ -38,7 +38,7 @@ function optimize_with_changepoints(
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64};
-    options=Evolutionary.Options(show_trace=false)
+    options=Evolutionary.Options(show_trace=true)
 )
     wrapped_obj(chrom) = objective_function(
         chrom, CP, n_global, n_segment_specific, parnames,
@@ -91,14 +91,18 @@ function evaluate_segment(
     y = Vector{Vector{Float64}}()
     for j in (a + min_length):step:(b - min_length)
         new_cp = sort([CP; j])
-        @show new_cp
-        loss, best = optimize_with_changepoints(
+        @show j
+        #@show new_cp
+        # This ensures that garbage doesn’t build up, especially when optimizing many segments.
+        GC.gc()
+        @time loss, best = optimize_with_changepoints(
             objective_function, chromosome, new_cp, bounds, ga,
             n_global, n_segment_specific, parnames,
             model_manager, loss_function, data
         )
         push!(x, loss + pen)
         push!(y, best)
+        break
     end
     return x, y
 end
@@ -136,25 +140,25 @@ function detect_changepoints(
     CP = Int[]
     @show CP
 
-    #loss_val, best_params = optimize_with_changepoints(
-    #    objective_function, initial_chromosome, CP, bounds, ga,
-    #    n_global, n_segment_specific, parnames,
-    #    model_manager, loss_function, data
-    #)
-    #@show best_params
-    loss_val = 1000
+    @time loss_val, best_params = optimize_with_changepoints(
+        objective_function, initial_chromosome, CP, bounds, ga,
+        n_global, n_segment_specific, parnames,
+        model_manager, loss_function, data
+    )
+    @show best_params
+    #loss_val = 1000
 
     update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
 
     while !isempty(tau)
-        @show tau
+        #@show tau
         a, b = pop!(tau)
         x, y = evaluate_segment(
             objective_function, a, b, CP, bounds, initial_chromosome, ga, pen, min_length, step,
             n_global, n_segment_specific, parnames,
             model_manager, loss_function, data
         )
-        @show x,y
+        #@show x,y
         if !isempty(x)
             minval, idx = findmin(x)
             if minval < loss_val
@@ -163,6 +167,8 @@ function detect_changepoints(
                 CP = sort(CP)
                 loss_val = minval
                 best_params = y[idx]
+                @show CP
+                @show best_params
                 update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
                 if chpt != a + min_length
                     push!(tau, (a, chpt))

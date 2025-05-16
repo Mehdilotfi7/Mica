@@ -4,6 +4,7 @@ using Evolutionary
 using DifferentialEquations
 using Plots
 using DataFrames
+using Tables
 
 # Define the SIR model
 function sirmodel!(du, u, p, t)
@@ -197,7 +198,7 @@ end
 # ----------------------------
 # Test script
 # ----------------------------
-@testset "Change Point Detection with SIR ODE Model" begin
+#@testset "Change Point Detection with SIR ODE Model" begin
     # True parameters
     β_values = [0.00009, 0.00014, 0.00025, 0.0005]
     change_points_true = [50, 100, 150]
@@ -214,8 +215,10 @@ end
     n_segment_specific = 1
     initial_chromosome = [γ, 0.0002]
     bounds = ([0.1, 0.00001], [0.9, 0.1])
-    ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
-    crossoverRate=0.6, mutation = gaussian(0.0001))
+    #ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+    #crossoverRate=0.6, mutation = gaussian(0.0001))
+    ga = GA(populationSize = 100, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
+    crossoverRate=0.7, mutation = gaussian(0.0001))
 
     # Set up model manager
     ode_spec = ODEModelSpec(example_ode_model, Dict(:γ => γ, :β => 0.0002), u0, tspan)
@@ -227,7 +230,11 @@ end
     data_M = reshape(Float64.(data), 1, :)
     n = length(data_M)
 
-    simulate_model(ode_spec)[:,end]
+    #simulate_model(ode_spec)[:,end]
+    initial_chromosome = [γ, 0.0002]
+    initial_chromosome = [γ, 0.0002]
+    bounds = ([0.1, 0.00001], [0.9, 0.1])
+
 
     detected_cp, params = detect_changepoints(
         objective_function,
@@ -245,4 +252,55 @@ end
         @test all(cp -> 0 < cp < n, detected_cp)
         println("Detected change points: ", detected_cp)
     end
+#end
+
+using LabelledArrays
+function objective_function(
+    chromosome::Vector{Float64}, 
+    change_points::Vector{Int}, 
+    n_global::Int, 
+    n_segment_specific::Int, 
+    parnames::Vector{Symbol}, 
+    model_manager::ModelManager, 
+    loss_function::Function,
+    data::Matrix{Float64}
+)
+    # === Extract parameters
+    constant_pars, segment_pars_list = extract_parameters(chromosome, n_global, n_segment_specific)
+
+    total_loss = 0.0
+    num_segments = length(change_points) + 1
+    n_times = size(data, 2)
+
+    u0 = get_initial_condition(model_manager)  # assumed to be a concrete vector
+
+    for i in 1:num_segments
+        # === Time range for segment
+        idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
+        idx_end   = (i > length(change_points)) ? n_times : change_points[i]
+
+        segment_data = @view data[:, idx_start:idx_end]
+
+        seg_pars = segment_pars_list[i]
+
+        # === Avoid allocations
+        all_pars = Vector{Float64}(undef, n_global + n_segment_specific)
+        copyto!(all_pars, 1, constant_pars, 1, n_global)
+        copyto!(all_pars, n_global + 1, seg_pars, 1, n_segment_specific)
+
+        # === INLINE simulate_model (was: segment_model + simulate_model)
+        params = all_pars
+        tspan = (idx_start - 1.0, idx_end - 1.0)
+
+        prob = ODEProblem(sirmodel!, u0, tspan, params)
+
+        sol = solve(prob, Tsit5(); saveat=1.0, abstol=1e-6, reltol=1e-6,
+                    isoutofdomain = (u, p, t) -> any(x -> x < 0, u))
+
+            sim_data = sol[:,:]
+            total_loss += loss_function(segment_data, sim_data)
+            u0 = sim_data[:, end]  # update initial condition
+    end
+
+    return total_loss
 end

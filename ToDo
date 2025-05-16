@@ -86,7 +86,23 @@ ToDo list:
 
 
 
+16.05.2025
+What i have done?
+1. now the codes are working for ode but it is really slow
+2. for solving this issue, i created a objective function using the original working code, but the proble is still there.
+ 
 
+ToDo list:
+
+1. re design the objective function from the working code and figure out the source of killing performance.
+2. test the working code for largfe covid model.
+-----
+1. create examole_Difference.jl and example_Regression.jl files to test two other methods than ODE model.
+2. Think about accepted data type from users ---> sould i use data handler module or restrict them to enter data as a Matrix.
+3. I need to double check all functions arguments type.
+4. move extra files to another folder just keep modules files in this directory.
+5. finalize the package.
+6. Find out the real time docstring monitoring.
 
 
 

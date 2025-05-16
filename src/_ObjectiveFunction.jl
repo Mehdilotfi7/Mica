@@ -2,6 +2,7 @@ module _ObjectiveFunction
 
 using DataFrames
 using LabelledArrays
+using Profile
 using .._ModelHandling
 using .._ModelSimulation
 import .._ModelSimulation: simulate_model
@@ -71,11 +72,11 @@ function objective_function(
     # For initial condition passing
     u0 = get_initial_condition(model_manager)
 
-    for i in 1:num_segments
+    @inbounds for i in 1:num_segments
 
         idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
         idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
-        segment_data = data[:, idx_start:idx_end]
+        segment_data = @view data[:, idx_start:idx_end]
 
         #@show i, (idx_start,idx_end)
         #@show constant_pars, segment_pars_list
