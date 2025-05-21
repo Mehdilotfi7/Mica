@@ -44,8 +44,8 @@ function optimize_with_changepoints(
         chrom, CP, n_global, n_segment_specific, parnames,
         model_manager, loss_function, data
     )
-    @show chromosome
-    @show bounds
+    #@show chromosome
+    #@show bounds
     result = Evolutionary.optimize(wrapped_obj, BoxConstraints(bounds...), chromosome, ga, options)
     return Evolutionary.minimum(result), Evolutionary.minimizer(result)
 end

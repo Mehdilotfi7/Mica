@@ -68,8 +68,9 @@ ToDo list:
 1. test evaluate_segment function with some change points for all three models.
 2. test detect_changepoints for all three models and see the run time as well.
 
-___________________________________________________________________________________________________________________________________________________
-___________________________________________________________________________________________________________________________________________________
+_________________________________________________________________________________________________________________________________________________
+_________________________________________________________________________________________________________________________________________________
+
 14.05.2025
 What i have done?
 1. evaluate_segment function for an ode model.
@@ -85,17 +86,18 @@ ToDo list:
 6. Find out the real time docstring monitoring.
 
 
-
+_________________________________________________________________________________________________________________________________________________
+_________________________________________________________________________________________________________________________________________________
 16.05.2025
 What i have done?
 1. now the codes are working for ode but it is really slow
-2. for solving this issue, i created a objective function using the original working code, but the proble is still there.
+2. for solving this issue, i created a objective function using the original working code, but the problem is still there.
  
 
 ToDo list:
 
 1. re design the objective function from the working code and figure out the source of killing performance.
-2. test the working code for largfe covid model.
+2. test the working code for large covid model.
 -----
 1. create examole_Difference.jl and example_Regression.jl files to test two other methods than ODE model.
 2. Think about accepted data type from users ---> sould i use data handler module or restrict them to enter data as a Matrix.
@@ -104,10 +106,37 @@ ToDo list:
 5. finalize the package.
 6. Find out the real time docstring monitoring.
 
+_________________________________________________________________________________________________________________________________________________
+_________________________________________________________________________________________________________________________________________________
+19.05.2025
+What i have done?
+1. now the codes are working for ode but it is really slow --------> i figured it out why it is runnung slow:  it is because of 
+   paprameter definition in ODE model. since i am using LArray i needed to can parameters as p.beta p.gamma in model definition
+2. for solving this issue, i created a objective function using the original working code, but the problem is still there. -----> this is also solved
+3. re design the objective function from the working code and figure out the source of killing performance. ----> done
+ 
 
+ToDo list:
 
+1. redefine the parameters type for LArray whichever is needed 
+2. think of initial setup, especially for parameters definition.
+3. think of the best parameter type (LArray, dic, plain vector, ComponentArrays) for passing to ODEProblem.  LArray or simple plain vector is the first choice.
 
+_________________________________________________________________________________________________________________________________________________
+_________________________________________________________________________________________________________________________________________________
+21.05.2025
+What i have done?
+1. redefine the parameters type for LArray whichever is needed ----> i defined the parameters type as LArray inside objective function 
+2. think of initial setup, especially for parameters definition. -----> for now i define them as plain array and parnames as (:a,:b)
+3. think of the best parameter type (LArray, dic, plain vector, ComponentArrays) for passing to ODEProblem.  LArray or simple plain vector is the first choice. -----> LArray is the best option
 
+ToDo list:
+
+1. do the changes in modules for ode model and other modules.
+2. test the modules for two other models 
+3. complete the docstrings 
+4. find the way of seeing preview of documentaions 
+5. the problem with ode change point detection is, it cannot find all true change points.
 
 
 
