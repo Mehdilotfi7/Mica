@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="images/mocha1.png" width="250" />
+<img src="images/mocha2.png" width="250" />
 </p>
 
 <p align="center">
