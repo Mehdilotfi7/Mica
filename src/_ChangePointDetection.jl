@@ -33,15 +33,15 @@ Optimize model parameters for a fixed set of change points using Evolutionary.jl
 Returns the minimum loss and the best parameter set.
 """
 function optimize_with_changepoints(
-    objective_function, chromosome, CP, bounds, ga,
-    n_global, n_segment_specific, parnames::Vector{Symbol},
+    objective_function, chromosome, parnames, CP, bounds, ga,
+    n_global, n_segment_specific,
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64};
-    options=Evolutionary.Options(show_trace=true)
+    options=Evolutionary.Options(show_trace=false)
 )
     wrapped_obj(chrom) = objective_function(
-        chrom, CP, n_global, n_segment_specific, parnames,
+        chrom, CP, parnames, n_global, n_segment_specific,
         model_manager, loss_function, data
     )
     #@show chromosome
@@ -81,8 +81,8 @@ Returns a tuple of loss values and corresponding best chromosomes.
 """
 function evaluate_segment(
     objective_function, a::Int, b::Int, CP::Vector{Int}, bounds,
-    chromosome::Vector{Float64}, ga, pen::Float64, min_length::Int, step::Int,
-    n_global::Int, n_segment_specific::Int, parnames::Vector{Symbol},
+    chromosome::Vector{Float64}, parnames, ga, pen::Float64, min_length::Int, step::Int,
+    n_global::Int, n_segment_specific::Int,
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64}
@@ -91,18 +91,18 @@ function evaluate_segment(
     y = Vector{Vector{Float64}}()
     for j in (a + min_length):step:(b - min_length)
         new_cp = sort([CP; j])
-        @show j
-        #@show new_cp
+        @show new_cp
         # This ensures that garbage doesn’t build up, especially when optimizing many segments.
-        GC.gc()
+        #GC.gc()
         @time loss, best = optimize_with_changepoints(
-            objective_function, chromosome, new_cp, bounds, ga,
-            n_global, n_segment_specific, parnames,
+            objective_function, chromosome, parnames, new_cp, bounds, ga,
+            n_global, n_segment_specific,
             model_manager, loss_function, data
         )
+        @show loss
         push!(x, loss + pen)
         push!(y, best)
-        break
+        #break
     end
     return x, y
 end
@@ -126,11 +126,11 @@ Returns:
 function detect_changepoints(
     objective_function,
     n::Int, n_global::Int, n_segment_specific::Int,
-    parnames::Vector{Symbol},
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64},
     initial_chromosome::Vector{Float64},
+    parnames,
     bounds::Tuple{Vector{Float64}, Vector{Float64}},
     ga, # i should define type later
     min_length::Int, step::Int;
@@ -141,8 +141,8 @@ function detect_changepoints(
     @show CP
 
     @time loss_val, best_params = optimize_with_changepoints(
-        objective_function, initial_chromosome, CP, bounds, ga,
-        n_global, n_segment_specific, parnames,
+        objective_function, initial_chromosome, parnames, CP, bounds, ga,
+        n_global, n_segment_specific,
         model_manager, loss_function, data
     )
     @show best_params
@@ -154,8 +154,8 @@ function detect_changepoints(
         #@show tau
         a, b = pop!(tau)
         x, y = evaluate_segment(
-            objective_function, a, b, CP, bounds, initial_chromosome, ga, pen, min_length, step,
-            n_global, n_segment_specific, parnames,
+            objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, pen, min_length, step,
+            n_global, n_segment_specific,
             model_manager, loss_function, data
         )
         #@show x,y

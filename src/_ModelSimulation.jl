@@ -24,7 +24,7 @@ Specification for an ODE (Ordinary Differential Equation) model.
 """
 struct ODEModelSpec <: AbstractModelSpec
     model_function::Function
-    params::Dict{Symbol, Any}
+    params
     initial_conditions::Vector{Float64}
     tspan::Tuple{Float64, Float64}
 end
@@ -41,7 +41,7 @@ Specification for a discrete Difference Equation model.
 """
 struct DifferenceModelSpec <: AbstractModelSpec
     model_function::Function
-    params::Dict{Symbol, Any}
+    params
     initial_conditions::Float64
     num_steps::Int
     extra_data::Tuple{Vector{Float64}, Vector{Float64}}
@@ -57,7 +57,7 @@ Specification for a simple Regression model (e.g., linear).
 """
 struct RegressionModelSpec <: AbstractModelSpec
     model_function::Function
-    params::Dict{Symbol, Any}
+    params
     time_steps::Int
 end
 

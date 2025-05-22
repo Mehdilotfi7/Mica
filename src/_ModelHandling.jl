@@ -83,55 +83,41 @@ Dispatches based on model type to slice and prepare data correctly.
 """
 function segment_model(
     manager::ModelManager{ODEModelSpec}, 
-    seg_pars, 
-    parnames, 
+    pars, 
     idx_start::Int, 
     idx_end::Int,
     u0
-)
+    )
+
     model = manager.base_model
-    new_params = deepcopy(model.params)
-    #@show parnames
-    #@show seg_pars
-    for (i, name) in enumerate(parnames)
-        new_params[name] = seg_pars[i]
-    end
-    return ODEModelSpec(model.model_function, new_params, u0, (idx_start, idx_end))
+    
+    return ODEModelSpec(model.model_function, pars, u0, (idx_start, idx_end))
 end
 
 function segment_model(
     manager::ModelManager{DifferenceModelSpec}, 
-    seg_pars, 
-    parnames, 
+    pars, 
     idx_start::Int, 
     idx_end::Int,
     u0
 )
     model = manager.base_model
-    new_params = deepcopy(model.params)
-    for (i, name) in enumerate(parnames)
-        new_params[name] = seg_pars[i]
-    end
+    
     segmented_extra = map(x -> x[idx_start:idx_end], model.extra_data)
     num_steps = idx_end - idx_start + 1
-    return DifferenceModelSpec(model.model_function, new_params, u0, num_steps, segmented_extra)
+    return DifferenceModelSpec(model.model_function, pars, u0, num_steps, segmented_extra)
 end
 
 function segment_model(
     manager::ModelManager{RegressionModelSpec}, 
-    seg_pars, 
-    parnames, 
+    pars, 
     idx_start::Int, 
     idx_end::Int,
     _  # no initial condition
 )
     model = manager.base_model
-    new_params = deepcopy(model.params)
-    for (i, name) in enumerate(parnames)
-        new_params[name] = seg_pars[i]
-    end
     time_steps = idx_end - idx_start + 1
-    return RegressionModelSpec(model.model_function, new_params, time_steps)
+    return RegressionModelSpec(model.model_function, pars, time_steps)
 end
 
 # =============================================================================

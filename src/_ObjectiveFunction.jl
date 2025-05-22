@@ -57,10 +57,10 @@ Computes the total loss for the current chromosome, simulating each segment sepa
 """
 function objective_function(
     chromosome, 
-    change_points::Vector{Int}, 
+    change_points, 
+    parnames, 
     n_global::Int, 
     n_segment_specific::Int, 
-    parnames::Vector{Symbol}, 
     model_manager::ModelManager, 
     loss_function::Function,
     data::Matrix{Float64}
@@ -72,36 +72,38 @@ function objective_function(
     # For initial condition passing
     u0 = get_initial_condition(model_manager)
 
-    @inbounds for i in 1:num_segments
+    if length(change_points)>0
 
-        idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
-        idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
-        segment_data = @view data[:, idx_start:idx_end]
+       for i in 1:num_segments
 
-        #@show i, (idx_start,idx_end)
-        #@show constant_pars, segment_pars_list
-        #@show num_segments
-        #@show length(segment_data)
-        #@assert segment_data == data
-        #@show (idx_start, idx_end)
+           idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
+           idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
+           segment_data = data[:, idx_start:idx_end]
+           
 
+           seg_pars = segment_pars_list[i]
+           all_pars = @LArray [constant_pars;seg_pars] parnames
+           model_spec = segment_model(model_manager, all_pars, idx_start, idx_end, u0)
 
+           sim_data = simulate_model(model_spec)
+           total_loss += loss_function(segment_data, sim_data)
+
+           # Update initial condition if applicable
+           u0 = update_initial_condition(model_manager, sim_data)
+       end
+    else
+        segment_data = data
+        idx_start = 1
+        idx_end = size(data, 2)
+
+        seg_pars = segment_pars_list[1]
         
-
-        seg_pars = segment_pars_list[i]
-        all_pars = vcat(constant_pars, seg_pars)
-        #@show (model_manager, all_pars, parnames, idx_start, idx_end, u0)
-        model_spec = segment_model(model_manager, all_pars, parnames, idx_start, idx_end, u0)
-        #@show model_spec
+        all_pars = @LArray [constant_pars;seg_pars] parnames
+        model_spec = segment_model(model_manager, all_pars, idx_start, idx_end, u0)
 
         sim_data = simulate_model(model_spec)
-        #@show typeof(sim_data), size(sim_data), sim_data[:,end]
-        total_loss += loss_function(segment_data, sim_data)
+        total_loss += loss_function(segment_data, sim_data)  
 
-        #@show typeof(sim_data)
-        # Update initial condition if applicable
-        u0 = update_initial_condition(model_manager, sim_data)
-        #@show u0
     end
 
     return total_loss
@@ -118,10 +120,10 @@ Convenient closure to call `objective_function` with fixed outer parameters.
 function wrapped_obj_function(chromosome)
     return objective_function(
         chromosome, 
+        parnames,
         change_points, 
         n_global, 
         n_segment_specific, 
-        parnames, 
         model_manager, 
         loss_function,
         data
