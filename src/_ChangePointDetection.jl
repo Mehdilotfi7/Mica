@@ -94,7 +94,7 @@ function evaluate_segment(
         @show new_cp
         # This ensures that garbage doesn’t build up, especially when optimizing many segments.
         #GC.gc()
-        @time loss, best = optimize_with_changepoints(
+        loss, best = optimize_with_changepoints(
             objective_function, chromosome, parnames, new_cp, bounds, ga,
             n_global, n_segment_specific,
             model_manager, loss_function, data

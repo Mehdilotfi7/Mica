@@ -58,7 +58,8 @@ function update_initial_condition(manager::ModelManager{ODEModelSpec}, sim_data)
 end
 
 function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data)
-    return sim_data.state[end]
+    #@show sim_data
+    return sim_data[end]
 end
 
 function update_initial_condition(manager::ModelManager{RegressionModelSpec}, sim_data)
