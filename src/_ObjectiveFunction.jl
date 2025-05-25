@@ -31,6 +31,11 @@ function extract_parameters(chromosome::Vector{T}, n_global::Int, n_segment_spec
     return global_parameters, segment_parameters
 end
 
+function BIC_penalty(p, n, CP)
+    pen = p * log(n) * length(CP)
+    return pen
+end
+
 # =============================================================================
 # objective_function
 # =============================================================================
@@ -87,6 +92,7 @@ function objective_function(
 
            sim_data = simulate_model(model_spec)
            total_loss += loss_function(segment_data, sim_data)
+           total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
 
            # Update initial condition if applicable
            u0 = update_initial_condition(model_manager, sim_data)
@@ -103,6 +109,8 @@ function objective_function(
 
         sim_data = simulate_model(model_spec)
         total_loss += loss_function(segment_data, sim_data)  
+        # BIC_penalty(p, n, CP)
+        total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
 
     end
 

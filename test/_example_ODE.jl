@@ -97,7 +97,7 @@ end
 
 
 
-initial_chromosome = [0.69, 0.0002]
+initial_chromosome = [0.6, 0.0001]
 parnames = (:γ, :β)
 # propertynames
 initial_params = initial_chromosome
@@ -112,7 +112,7 @@ step = 10
 ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
 crossoverRate=0.6, mutation = gaussian(0.0001))
 n = length(data_M)
-pen = 10000.0
+pen = 0.0
 
 
 @time detected_cp, params = detect_changepoints(
