@@ -46,6 +46,7 @@ function optimize_with_changepoints(
     )
     #@show chromosome
     #@show bounds
+    Random.seed!(1234)
     result = Evolutionary.optimize(wrapped_obj, BoxConstraints(bounds...), chromosome, ga, options)
     return Evolutionary.minimum(result), Evolutionary.minimizer(result)
 end
@@ -81,7 +82,7 @@ Returns a tuple of loss values and corresponding best chromosomes.
 """
 function evaluate_segment(
     objective_function, a::Int, b::Int, CP::Vector{Int}, bounds,
-    chromosome::Vector{Float64}, parnames, ga, pen::Float64, min_length::Int, step::Int,
+    chromosome::Vector{Float64}, parnames, ga, min_length::Int, step::Int,
     n_global::Int, n_segment_specific::Int,
     model_manager::ModelManager,
     loss_function::Function,
@@ -100,7 +101,8 @@ function evaluate_segment(
             model_manager, loss_function, data
         )
         @show loss
-        push!(x, loss + pen)
+        @show best
+        push!(x, loss)
         push!(y, best)
         #break
     end
@@ -133,18 +135,18 @@ function detect_changepoints(
     parnames,
     bounds::Tuple{Vector{Float64}, Vector{Float64}},
     ga, # i should define type later
-    min_length::Int, step::Int;
-    pen::Float64=log(n)
+    min_length::Int, step::Int
 )
     tau = [(0, n)]
     CP = Int[]
     @show CP
 
-    @time loss_val, best_params = optimize_with_changepoints(
+    loss_val, best_params = optimize_with_changepoints(
         objective_function, initial_chromosome, parnames, CP, bounds, ga,
         n_global, n_segment_specific,
         model_manager, loss_function, data
     )
+    @show loss_val
     @show best_params
     #loss_val = 1000
 
@@ -154,7 +156,7 @@ function detect_changepoints(
         #@show tau
         a, b = pop!(tau)
         x, y = evaluate_segment(
-            objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, pen, min_length, step,
+            objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, min_length, step,
             n_global, n_segment_specific,
             model_manager, loss_function, data
         )

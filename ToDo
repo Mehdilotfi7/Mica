@@ -159,7 +159,26 @@ ToDo list:
    this is similar to objective function but the difference is to instead of computing loss we use append! to collect all sampes for all segments 
    and then plot them!!!!
 
-
+   ___________________________________________________________________________________________________________________________________________________
+   ___________________________________________________________________________________________________________________________________________________
+   
+   26.05.2025
+   What i have done?
+   1. for ode sample model it cannot detect all true cange points and the change point located in time point 150 is missing. ----> it was about GA properties 
+   3. the problem with ode change point detection is, it cannot find all true change points. ----> now it finds but have some additional change points 
+   4. test the modules for two other models.----> for DE model it is working, but i assume that extra data has two elements.
+   5. implement this penalty term in objective function? or in the current version place? are they doing the same thing?
+   penalty_BIC(change_points) = p/2*log(size(data, 2)) * length(change_points) ------> implemented, but with full BIC CP,n,n_segPars it only detects the change point 50
+   but with other options, the result is like there is no penalty term.
+   
+   ToDo list:
+   
+   1. try to define appropriate penalty term.
+   2. complete the docstrings 
+   3. find the way of seeing preview of documentaions 
+   4. visualisation of change point detection: create the visualisation module to plot the change points in each step 
+      this is similar to objective function but the difference is to instead of computing loss we use append! to collect all sampes for all segments 
+      and then plot them!!!!
 
 
 

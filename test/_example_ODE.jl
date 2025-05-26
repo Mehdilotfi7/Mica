@@ -91,13 +91,14 @@ end
 function loss_function(observed, simulated)
     simulated = simulated[2:2,:]
     #@assert size(observed) == size(simulated) "Dimension mismatch in loss function."
-    return sqrt(sum((observed .- simulated).^2))
+    
+    return sqrt(sum(abs2, (observed.- simulated).^2))
 end
 
 
 
 
-initial_chromosome = [0.6, 0.0001]
+initial_chromosome = [0.69, 0.0002]
 parnames = (:γ, :β)
 # propertynames
 initial_params = initial_chromosome
@@ -111,8 +112,13 @@ min_length = 10
 step = 10
 ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
 crossoverRate=0.6, mutation = gaussian(0.0001))
+#ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.7,
+#crossoverRate=0.7, mutation = gaussian(0.01))
 n = length(data_M)
-pen = 0.0
+#pen = 0.0
+
+#using Random
+#Random.seed!(1234)
 
 
 @time detected_cp, params = detect_changepoints(
@@ -124,3 +130,20 @@ pen = 0.0
     initial_chromosome, parnames, bounds, ga,
     min_length, step
 )
+# not penalizing and setting seed, i get the same results all the time.
+# 281.751858 seconds
+# [50, 100, 130, 140, 150, 190]
+
+
+
+function sirmodel!(du, u, p, t)
+    S, I, R = u
+    β, γ = p
+    du[1] = -β * S * I
+    du[2] = β * S * I - γ * I
+    du[3] = γ * I
+end
+
+plot(data_M[1,:])
+times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
+plot!(sim) 

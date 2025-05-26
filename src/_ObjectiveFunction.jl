@@ -36,6 +36,16 @@ function BIC_penalty(p, n, CP)
     return pen
 end
 
+function BIC_penalty(p,n)
+    pen = p * log(n)
+    return pen
+end
+
+function AIC_penalty(p, CP)
+    pen = p * length(CP)
+    return pen
+end
+
 # =============================================================================
 # objective_function
 # =============================================================================
@@ -78,7 +88,7 @@ function objective_function(
     u0 = get_initial_condition(model_manager)
 
     if length(change_points)>0
-
+#
        for i in 1:num_segments
 
            idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
@@ -92,7 +102,9 @@ function objective_function(
 
            sim_data = simulate_model(model_spec)
            total_loss += loss_function(segment_data, sim_data)
-           total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
+           #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
+           total_loss += BIC_penalty(length(seg_pars), size(data, 2))
+           #total_loss += AIC_penalty(length(seg_pars), change_points)
 
            # Update initial condition if applicable
            u0 = update_initial_condition(model_manager, sim_data)
@@ -109,8 +121,11 @@ function objective_function(
 
         sim_data = simulate_model(model_spec)
         total_loss += loss_function(segment_data, sim_data)  
-        # BIC_penalty(p, n, CP)
-        total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
+        #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
+        #total_loss += BIC_penalty(size(data, 2), change_points)        
+        #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
+        #total_loss += AIC_penalty(length(seg_pars), change_points)
+        total_loss += BIC_penalty(length(seg_pars), size(data, 2))
 
     end
 
