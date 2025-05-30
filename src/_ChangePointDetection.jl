@@ -1,8 +1,4 @@
-module _ChangePointDetection
-
-using Evolutionary
-using _ObjectiveFunction
-using _Visualization
+# module _ChangePointDetection
 
 """
 # ChangePointDetection Module
@@ -64,6 +60,7 @@ function update_bounds!(chromosome, bounds, n_global, n_segment_specific, extrac
     _, seg_lower = extract_parameters(bounds[1], n_global, n_segment_specific)
     _, seg_upper = extract_parameters(bounds[2], n_global, n_segment_specific)
 
+    # i should add the estimation of previous segment pars as initial guesses for next segment
     append!(chromosome, seg_specific[1])
     append!(bounds[1], seg_lower[1])
     append!(bounds[2], seg_upper[1])
@@ -162,8 +159,13 @@ function detect_changepoints(
         )
         #@show x,y
         if !isempty(x)
+            #pen = BIC_penalty(n_segment_specific, n_global, n, CP)
+            pen = custom_penalty(n_segment_specific, n, CP)
+            @show (n_segment_specific, n_global, n, CP)
+            @show pen
+            #@show pen
             minval, idx = findmin(x)
-            if minval < loss_val
+            if minval + pen < loss_val
                 chpt = a + (idx * step)
                 push!(CP, chpt)
                 CP = sort(CP)
@@ -185,4 +187,4 @@ function detect_changepoints(
     return CP, best_params
 end
 
-end
+# end

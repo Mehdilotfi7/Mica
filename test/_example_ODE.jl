@@ -2,6 +2,7 @@ using Evolutionary
 using DifferentialEquations
 using LabelledArrays
 using Plots
+using Statistics
 
 
 # ----------------------------
@@ -66,7 +67,7 @@ tspan = (0.0, 250.0)
 # Generate synthetic data
 times, data = generate_toy_dataset(β_values, change_points_true, γ, u0, tspan)
 data_M = reshape(Float64.(data), 1, :)
-plot(data_M[1,:])
+#plot(data_M[1,:])
 #times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
 #plot!(sim) 
 ################################################################################################
@@ -99,6 +100,8 @@ end
 
 
 initial_chromosome = [0.69, 0.0002]
+#initial_chromosome = [0.4, 0.002]
+#initial_chromosome = rand(2)
 parnames = (:γ, :β)
 # propertynames
 initial_params = initial_chromosome
@@ -110,17 +113,20 @@ n_global = 1
 n_segment_specific = 1
 min_length = 10
 step = 10
+# this GA setting works better when the initial chromosome is defined properly close to real pars
 ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
 crossoverRate=0.6, mutation = gaussian(0.0001))
 #ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.7,
 #crossoverRate=0.7, mutation = gaussian(0.01))
 n = length(data_M)
 #pen = 0.0
-
 #using Random
 #Random.seed!(1234)
 
-
+# [50, 90, 100, 110, 210]
+# need to choose random seed number before GA and pen coefficent 
+# [50, 100, 150, 160, 190]
+# [50, 60, 100, 230, 240]
 @time detected_cp, params = detect_changepoints(
     objective_function,
     n, n_global, n_segment_specific,

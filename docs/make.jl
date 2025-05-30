@@ -1,23 +1,22 @@
 using TSCPDetector
 using Documenter
 
-DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
+#DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
 
 makedocs(;
     modules=[TSCPDetector],
     authors="Mehdi Lotfi",
     sitename="TSCPDetector.jl",
-    format=Documenter.HTML(;
-        canonical="https://Mehdilotfi7.github.io/TSCPDetector.jl",
-        edit_link="main",
-        assets=String[],
-    ),
-    pages=[
+    format=Documenter.HTML(),
+    remotes = Dict(),
+    pages = [
         "Home" => "index.md",
+        "Getting Started" => "getting_started.md",
+        "API" => "api.md",
     ],
 )
 
-deploydocs(;
-    repo="github.com/Mehdilotfi7/TSCPDetector.jl",
-    devbranch="main",
-)
+#deploydocs(;
+#    repo=nothing,
+#    devbranch="main",
+#)

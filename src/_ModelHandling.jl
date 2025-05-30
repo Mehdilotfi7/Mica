@@ -1,9 +1,5 @@
-module _ModelHandling
+# module _ModelHandling
 
-using .._ModelSimulation
-import .._ModelSimulation: AbstractModelSpec, ODEModelSpec, DifferenceModelSpec, RegressionModelSpec
-
-export ModelManager, get_initial_condition, segment_model, get_model_type
 
 # =============================================================================
 # ModelManager: Unified Model Interface for Change Point Detection
@@ -135,4 +131,4 @@ get_model_type(manager::ModelManager{ODEModelSpec}) = "ODE"
 get_model_type(manager::ModelManager{DifferenceModelSpec}) = "Difference"
 get_model_type(manager::ModelManager{RegressionModelSpec}) = "Regression"
 
-end # module
+#end # module

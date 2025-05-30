@@ -1,14 +1,15 @@
-```@meta
-CurrentModule = TSCPDetector
-```
+# TSCPDetector.jl
 
-# TSCPDetector
+**TSCPDetector** is a Julia package for detecting change points in time series using simulation-based models and evolutionary optimization.
 
-Documentation for [TSCPDetector](https://github.com/Mehdilotfi7/TSCPDetector.jl).
+## Features
 
-```@index
-```
+- Support for ODE, Difference, and Regression models
+- Flexible change point detection framework
+- Optimization with Evolutionary.jl
 
-```@autodocs
-Modules = [TSCPDetector]
-```
+## Installation
+
+```julia
+#using Pkg
+#Pkg.add(url="https://github.com/Mehdilotfi7/TSCPDetector.jl")

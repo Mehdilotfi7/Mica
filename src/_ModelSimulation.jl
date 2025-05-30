@@ -1,8 +1,8 @@
-module _ModelSimulation
+# module _ModelSimulation
 
 # needed pacjages
-using DifferentialEquations
-using DataFrames
+#using DifferentialEquations
+#using DataFrames
 
 # =============================================================================
 # Model Specification Types
@@ -184,4 +184,4 @@ function example_regression_model(params, time_steps::Int)
     return DataFrame(time=time, simulated_values=simulated_values)
 end
 
-end # module
+#end # module

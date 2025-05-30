@@ -1,14 +1,5 @@
-module _ObjectiveFunction
+# module _ObjectiveFunction
 
-using DataFrames
-using LabelledArrays
-using Profile
-using .._ModelHandling
-using .._ModelSimulation
-import .._ModelSimulation: simulate_model
-import .._ModelHandling: get_initial_condition, segment_model, update_initial_condition
-
-export objective_function
 # =============================================================================
 # extract_parameters Function
 # =============================================================================
@@ -31,13 +22,21 @@ function extract_parameters(chromosome::Vector{T}, n_global::Int, n_segment_spec
     return global_parameters, segment_parameters
 end
 
+#=
 function BIC_penalty(p, n, CP)
-    pen = p * log(n) * length(CP)
+    pen =  0.8134 * p * log(n) * length(CP)
     return pen
 end
 
+function BIC_penalty(p, g, n, CP)
+    s = length(CP) + 1
+    total_params = g + p * s
+    return 1.09 * total_params * log(n)
+end
+
+
 function BIC_penalty(p,n)
-    pen = p * log(n)
+    pen = 2 * p * log(n)
     return pen
 end
 
@@ -45,6 +44,14 @@ function AIC_penalty(p, CP)
     pen = p * length(CP)
     return pen
 end
+=#
+using Statistics
+function custom_penalty(p, n, CP)
+    seg_lengths = diff([0; CP; n])
+    imbalance_penalty = length(seg_lengths) > 1 ? std(seg_lengths) : 0.0  # Avoid NaN for single values
+    return 1 * p * log(n) * length(CP) + 0.12 * imbalance_penalty
+end
+
 
 # =============================================================================
 # objective_function
@@ -103,8 +110,10 @@ function objective_function(
            sim_data = simulate_model(model_spec)
            total_loss += loss_function(segment_data, sim_data)
            #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
-           total_loss += BIC_penalty(length(seg_pars), size(data, 2))
+           #total_loss += BIC_penalty(length(seg_pars), size(data, 2))
            #total_loss += AIC_penalty(length(seg_pars), change_points)
+           #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
+           #custom_penalty(length(seg_pars), size(data, 2), change_points)
 
            # Update initial condition if applicable
            u0 = update_initial_condition(model_manager, sim_data)
@@ -125,7 +134,9 @@ function objective_function(
         #total_loss += BIC_penalty(size(data, 2), change_points)        
         #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
         #total_loss += AIC_penalty(length(seg_pars), change_points)
-        total_loss += BIC_penalty(length(seg_pars), size(data, 2))
+        #total_loss += BIC_penalty(length(seg_pars), size(data, 2))
+        #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
+        #custom_penalty(length(seg_pars), size(data, 2), change_points)
 
     end
 
@@ -153,5 +164,5 @@ function wrapped_obj_function(chromosome)
     )
 end
 
-end # module
+#end # module
 

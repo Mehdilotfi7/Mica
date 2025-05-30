@@ -173,14 +173,20 @@ ToDo list:
    
    ToDo list:
    
-   1. try to define appropriate penalty term.
-   2. complete the docstrings 
-   3. find the way of seeing preview of documentaions 
-   4. visualisation of change point detection: create the visualisation module to plot the change points in each step 
+   1. i should add the estimation of previous segment pars as initial guesses for next segment
+   2. try to define appropriate penalty term. in evaluate_segment function or or objective function??
+   3. complete the docstrings 
+   4. find the way of seeing preview of documentaions 
+   5. visualisation of change point detection: create the visualisation module to plot the change points in each step 
       this is similar to objective function but the difference is to instead of computing loss we use append! to collect all sampes for all segments 
       and then plot them!!!!
 
-
+   29.05.2025
+ - penalty term: BIC with a weight or using a penalty that account for sigment imbalance 
+ - set seed : pay attention to numbers or the place where to put set.seed
+ - step size : by changing the step size detected cahnge points are changing and even in some cases, with very less
+   num step it just detect very less change points ---> unexpected 
+- test solutions from chatGPT
 
 
 ___________________________________________________________________________________________________________________________________________________
