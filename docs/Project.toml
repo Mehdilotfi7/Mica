@@ -1,3 +1,3 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-FirstPkg = "28c78530-8bb7-4fc0-9b88-04e8b391d412"
+TSCPDetector = "28c78530-8bb7-4fc0-9b88-04e8b391d412"
