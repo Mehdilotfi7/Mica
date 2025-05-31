@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   docs:
+    #needs: [test]
     name: Documentation
     runs-on: ubuntu-latest
     steps:
