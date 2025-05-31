@@ -29,4 +29,4 @@ makedocs(;
 
 deploydocs(; repo = "github.com/mehdilotfi7/TSCPDetector.jl.git", push_preview = false)
 
-
+#
