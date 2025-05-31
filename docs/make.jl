@@ -16,7 +16,9 @@ makedocs(;
   pages = [
     "Home" => "index.md",
     "Getting started" => "getting_started.md",
+    "Tutorials" => "tutorial.md",
     "Problem types" => "problems.md",
+    "Examples" => "examples.md",
     "Solver algorithms for ODE models" => "solver_hints_ODE.md",
     "Genetic algorithms hints" => "GA_hints.md",
     "Reference" => "references.md"
@@ -28,14 +30,3 @@ makedocs(;
 deploydocs(; repo = "github.com/mehdilotfi7/TSCPDetector.jl", push_preview = false)
 
 
-# Getting started
-
-# Problem types
-
-# Examples 
-
-# Solver algorithms for ODE models
-
-# Genetic algorithms hints
-
-# Future features 
