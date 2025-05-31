@@ -27,6 +27,6 @@ makedocs(;
   checkdocs=:warn
 )
 
-deploydocs(; repo = "github.com/mehdilotfi7/TSCPDetector.jl", push_preview = false)
+deploydocs(; repo = "github.com/mehdilotfi7/TSCPDetector.jl.git", push_preview = false)
 
 
