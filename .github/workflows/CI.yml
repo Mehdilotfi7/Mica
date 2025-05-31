@@ -52,6 +52,7 @@ jobs:
     permissions:
       actions: write # needed to allow julia-actions/cache to proactively delete old caches that it has created
       contents: write
+      pull-requests: write
       statuses: write
     steps:
       - uses: actions/checkout@v4
