@@ -45,12 +45,21 @@ function AIC_penalty(p, CP)
     return pen
 end
 =#
-using Statistics
-function custom_penalty(p, n, CP)
-    seg_lengths = diff([0; CP; n])
-    imbalance_penalty = length(seg_lengths) > 1 ? std(seg_lengths) : 0.0  # Avoid NaN for single values
-    return 1 * p * log(n) * length(CP) + 0.12 * imbalance_penalty
+
+function BIC_penalty(p,n)
+    pen = 2 * p * log(n)
+    return pen
 end
+
+function custom_penalty(p, ns, n, CP)
+    return 1.0 * p * length(CP) * log(ns) + 10.0 * (ns/n)  
+end
+
+using Distances
+function custom_penalty(p, p1, p2, CP)
+    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
+end
+
 
 
 # =============================================================================
@@ -114,6 +123,7 @@ function objective_function(
            #total_loss += AIC_penalty(length(seg_pars), change_points)
            #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
            #custom_penalty(length(seg_pars), size(data, 2), change_points)
+           #total_loss += custom_penalty(length(seg_pars), idx_end-idx_start, size(data, 2), change_points)
 
            # Update initial condition if applicable
            u0 = update_initial_condition(model_manager, sim_data)
@@ -137,6 +147,7 @@ function objective_function(
         #total_loss += BIC_penalty(length(seg_pars), size(data, 2))
         #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
         #custom_penalty(length(seg_pars), size(data, 2), change_points)
+        #total_loss += custom_penalty(length(seg_pars), idx_end-idx_start, size(data, 2), change_points)
 
     end
 

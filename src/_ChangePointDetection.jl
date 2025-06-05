@@ -48,6 +48,35 @@ function optimize_with_changepoints(
 end
 
 # ----------------------------------------------------------------------
+# Function: custom_penalty
+# ----------------------------------------------------------------------
+function custom_penalty(p, n, CP)
+    seg_lengths = diff([0; CP; n])
+    imbalance_penalty = length(seg_lengths) > 1 ? std(seg_lengths) : 0.0  # Avoid NaN for single values
+    return 3.3 * p * length(CP) * log(n)  #+ 0.12 * imbalance_penalty
+end
+
+function custom_penalty(p, ns, n, CP)
+    return 2.0 * p * length(CP) * log(ns) + 0.1 * (ns/n)  
+end
+
+function custom_penalty(p, dl, l0, CP)
+    return 2.0 * p * length(CP) + 2.0 * (1-(dl/l0))^2
+end
+
+using Distances
+function custom_penalty(p, p1, p2, CP)
+    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
+end
+
+function BIC_penalty(p,n)
+    pen = 100.0 * p * log(n)
+    return pen
+end
+
+
+
+# ----------------------------------------------------------------------
 # Function: update_bounds!
 # ----------------------------------------------------------------------
 """
@@ -83,7 +112,8 @@ function evaluate_segment(
     n_global::Int, n_segment_specific::Int,
     model_manager::ModelManager,
     loss_function::Function,
-    data::Matrix{Float64}
+    data::Matrix{Float64},
+    penalty_fn::Function
 )
     x = Float64[]
     y = Vector{Vector{Float64}}()
@@ -99,7 +129,17 @@ function evaluate_segment(
         )
         @show loss
         @show best
-        push!(x, loss)
+        #pen = BIC_penalty(n_segment_specific * length(new_cp), 250)
+        # Arguments for penalty
+        segment_lengths = diff([0; new_cp; n])
+        pen = call_penalty_fn(penalty_fn;
+            p=n_segment_specific, n=n, CP=new_cp,
+            segment_lengths=segment_lengths,
+            num_segments=length(new_cp) + 1
+        )
+        @show pen
+
+        push!(x, loss + pen)
         push!(y, best)
         #break
     end
@@ -132,7 +172,8 @@ function detect_changepoints(
     parnames,
     bounds::Tuple{Vector{Float64}, Vector{Float64}},
     ga, # i should define type later
-    min_length::Int, step::Int
+    min_length::Int, step::Int,
+    penalty_fn::Function = default_penalty  # Default penalty
 )
     tau = [(0, n)]
     CP = Int[]
@@ -155,17 +196,26 @@ function detect_changepoints(
         x, y = evaluate_segment(
             objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, min_length, step,
             n_global, n_segment_specific,
-            model_manager, loss_function, data
+            model_manager, loss_function, data,
+            penalty_fn
         )
         #@show x,y
         if !isempty(x)
             #pen = BIC_penalty(n_segment_specific, n_global, n, CP)
-            pen = custom_penalty(n_segment_specific, n, CP)
-            @show (n_segment_specific, n_global, n, CP)
-            @show pen
+            #pen = custom_penalty(n_segment_specific, b-a, n, CP)
             #@show pen
             minval, idx = findmin(x)
-            if minval + pen < loss_val
+            #@show idx
+            #pen = custom_penalty(n_segment_specific, minval, loss_val, CP)
+            #_ , betas = extract_parameters(y[idx], n_global, n_segment_specific)
+            #@show betas
+            #p2 = betas[end]
+            #p1 = betas[end-1]
+            #p1 = length(CP) > 1 ? betas[end - 1] : p2
+            #@show p1,p2
+            #pen = custom_penalty(n_segment_specific, p1, p2, CP)
+            #@show pen
+            if minval < loss_val
                 chpt = a + (idx * step)
                 push!(CP, chpt)
                 CP = sort(CP)

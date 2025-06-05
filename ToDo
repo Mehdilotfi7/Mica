@@ -189,6 +189,29 @@ ToDo list:
 - test solutions from chatGPT
 
 
+
+31.05.2025
+- I workd on documentation:
+- the template is ready and i can access to local web interface but 
+- on github, gh-pages files are missing at the moment; I need to think about 
+  that or ask Johanness
+
+02.06.2025
+- i am not sure again if i put penalty term in ibjective function or in ChangePointDetection function
+- tested ChangePointDetection fuction, in any case it detect 190 first 
+- test the same penalty in objective function (Euclidian distance of parameters values)
+
+04.06.2025
+- change the population size to 150, this gives more chance to GA to find the global optimum for short segments
+- now with BIC penalizing with lambda=100, i get only true change points without extra change points
+- now i need to do benchmarking and repreduce the results of paper 
+- I want to also integrate the PELT methods
+
+05.06.2025
+- i defined penalty.jl module to handle the author defined penalty function ---> done
+- now i need to do benchmarking and repreduce the results of paper --> Covid ---> wind turbine
+- I want to also integrate the PELT methods
+
 ___________________________________________________________________________________________________________________________________________________
 ___________________________________________________________________________________________________________________________________________________
 

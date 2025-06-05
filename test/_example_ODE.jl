@@ -3,7 +3,7 @@ using DifferentialEquations
 using LabelledArrays
 using Plots
 using Statistics
-
+using Random
 
 # ----------------------------
 # SIR ODE model
@@ -97,6 +97,11 @@ function loss_function(observed, simulated)
 end
 
 
+function loss_function(observed, simulated)
+    simulated = simulated[2:2,:]    
+    return sum(abs2, (observed.- simulated))
+end
+
 
 
 initial_chromosome = [0.69, 0.0002]
@@ -114,11 +119,13 @@ n_segment_specific = 1
 min_length = 10
 step = 10
 # this GA setting works better when the initial chromosome is defined properly close to real pars
-ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+ga = GA(populationSize = 150, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
 crossoverRate=0.6, mutation = gaussian(0.0001))
 #ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.7,
 #crossoverRate=0.7, mutation = gaussian(0.01))
 n = length(data_M)
+
+my_penalty3(p, n) = 100.0 * p * log(n)
 #pen = 0.0
 #using Random
 #Random.seed!(1234)
@@ -134,7 +141,7 @@ n = length(data_M)
     loss_function,
     data_M,
     initial_chromosome, parnames, bounds, ga,
-    min_length, step
+    min_length, step, my_penalty3
 )
 # not penalizing and setting seed, i get the same results all the time.
 # 281.751858 seconds
