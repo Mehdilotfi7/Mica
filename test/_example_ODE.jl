@@ -59,15 +59,18 @@ end
 
 
 β_values = [0.00009, 0.00014, 0.00025, 0.0005]
+β_values = [0.00009, 0.00014]
 change_points_true = [50, 100, 150]
+change_points_true = [50]
 γ = 0.7
 u0 = [9999.0, 1.0, 0.0]
 tspan = (0.0, 250.0)
+tspan = (0.0, 70.0)
 
 # Generate synthetic data
 times, data = generate_toy_dataset(β_values, change_points_true, γ, u0, tspan)
 data_M = reshape(Float64.(data), 1, :)
-#plot(data_M[1,:])
+plot(data_M[1,:])
 #times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
 #plot!(sim) 
 ################################################################################################
@@ -102,7 +105,7 @@ function loss_function(observed, simulated)
     return sum(abs2, (observed.- simulated))
 end
 
-
+begin
 
 initial_chromosome = [0.69, 0.0002]
 #initial_chromosome = [0.4, 0.002]
@@ -125,15 +128,17 @@ crossoverRate=0.6, mutation = gaussian(0.0001))
 #crossoverRate=0.7, mutation = gaussian(0.01))
 n = length(data_M)
 
-my_penalty3(p, n) = 100.0 * p * log(n)
+my_penalty4(p, n) = 0.0 * p * log(n)
 #pen = 0.0
 #using Random
 #Random.seed!(1234)
-
+end
 # [50, 90, 100, 110, 210]
 # need to choose random seed number before GA and pen coefficent 
 # [50, 100, 150, 160, 190]
 # [50, 60, 100, 230, 240]
+#using BenchmarkTools
+# @benchmark
 @time detected_cp, params = detect_changepoints(
     objective_function,
     n, n_global, n_segment_specific,
@@ -141,11 +146,12 @@ my_penalty3(p, n) = 100.0 * p * log(n)
     loss_function,
     data_M,
     initial_chromosome, parnames, bounds, ga,
-    min_length, step, my_penalty3
+    min_length, step, my_penalty4
 )
 # not penalizing and setting seed, i get the same results all the time.
 # 281.751858 seconds
 # [50, 100, 130, 140, 150, 190]
+
 
 
 

@@ -212,6 +212,14 @@ ToDo list:
 - now i need to do benchmarking and repreduce the results of paper --> Covid ---> wind turbine
 - I want to also integrate the PELT methods
 
+
+benchmarking for first iterations where datalength is 70 is slow and does not find any change points
+but when i run it without benchmarking just testing with the less time points as before it finds 50 and some 
+more also it is fast. i think the proble is with benchmarking 
+- is there any julia package to do this?
+- if not how can i make the benchmarking clean
+- is the current benchmarking making sense? or should i change my benchmarking criteria?
+
 ___________________________________________________________________________________________________________________________________________________
 ___________________________________________________________________________________________________________________________________________________
 

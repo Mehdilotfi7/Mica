@@ -11,12 +11,14 @@ function sirmodel!(du, u, p, t)
     du[3] = γ * I
 end
 
+
 # Model wrapper for TSCPDetector
 function example_ode_model(params, tspan::Tuple{Float64, Float64}, u0::Vector{Float64})
     prob = ODEProblem(sirmodel!, u0, tspan, params)
     sol = solve(prob, Tsit5(), saveat=1.0, abstol = 1.0e-6, reltol = 1.0e-6)
     return sol[:,:]  # returns matrix-like solution
 end
+
 
 function loss_function(observed, simulated)
     simulated = simulated[2:2,:]
@@ -198,10 +200,10 @@ end
 # Example usage
 begin
 
-noise_levels = [1, 10, 20]
+noise_levels = [0, 1, 10, 20]
 noise_types = ["Gaussian", "Uniform"]
 penalty_values = [BIC_penalty1, BIC_penalty2, BIC_penalty3, BIC_penalty4]
-change_point_counts = [1, 2, 3]
+change_point_counts = [0, 1, 2, 3]
 data_lengths = [70, 130, 160, 200, 250]
 beta_values = [0.00009, 0.00014, 0.00025, 0.0005]
 change_points = [50.0, 100.0, 150.0]
@@ -223,7 +225,7 @@ min_length = 10
 step = 10
 ga = GA(populationSize = 150, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
 crossoverRate=0.6, mutation = gaussian(0.0001))
-# n = length(data_M)
+
 
 end
 
