@@ -11,6 +11,7 @@ using Random
 function sirmodel!(du, u, p, t)
     S, I, R = u
     β, γ = p
+    @show β, γ
     du[1] = -β * S * I
     du[2] = β * S * I - γ * I
     du[3] = γ * I
@@ -34,9 +35,9 @@ function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
         end
 
         # Set parameters for this segment
-        params = [beta_values[i], γ]
+        #params = [beta_values[i], γ]
         #parnames = (:γ, :β)
-        #params = @LArray [beta_values[i], γ] parnames
+        params = @LArray [beta_values[i], γ] (:β, :γ)
 
         # Create an ODE problem
         prob = ODEProblem(sirmodel!, u0, tspan_segment, params)
@@ -52,6 +53,7 @@ function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
 
         # Update initial conditions for the next segment
         u0 = sol.u[end]
+        @show u0
     end
 
     return all_times, abs.(data_CP)
@@ -80,6 +82,7 @@ plot(data_M[1,:])
 function sirmodel!(du, u, p, t)
     S, I, R = u
     β, γ = p.β , p.γ
+    @show β, γ
     du[1] = -β * S * I
     du[2] = β * S * I - γ * I
     du[3] = γ * I

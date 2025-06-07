@@ -10,3 +10,6 @@ module load julia/1.10
 
 julia --project=. -e 'using Pkg; Pkg.instantiate()'
 julia --project=. benchmark.jl
+
+
+

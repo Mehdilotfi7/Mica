@@ -1,6 +1,9 @@
 using LabelledArrays
 using DifferentialEquations
 using Statistics
+using Evolutionary 
+using Plots
+using Random
 
 
 function sirmodel!(du, u, p, t)
@@ -43,10 +46,11 @@ function generate_toy_dataset(beta_values, change_points, γ, u0, tspan, noise_l
 
         # Set parameters for this segment
         
-        params = @LArray [beta_values[i], γ] (:γ, :β)
+        params = @LArray [beta_values[i], γ] (:β, :γ)
 
         # Create an ODE problem
         prob = ODEProblem(sirmodel!, u0, tspan_segment, params)
+
         # Solve the ODE
         sol = solve(prob, saveat = 1.0)
 
@@ -71,7 +75,7 @@ N = 10_000
 u0 = [N-1, 1, 0]
 tspan = (0.0, 250.0)
 noise_level = 0.0
-times, data = generate_toy_dataset(beta_values, change_points, γ, N, u0, tspan, noise_level)
+times, data = generate_toy_dataset(beta_values, change_points, γ, u0, tspan, noise_level)
 data
 
 ###########################################
@@ -121,7 +125,7 @@ end
   ###########################################
   
 
-  function benchmark_noise_types(
+function benchmark_noise_types(
     # benchnarking arguments
     beta_values, change_points, γ, u0, noise_levels,
     noise_types, detect_changepoints, change_point_counts,
@@ -148,11 +152,13 @@ end
                               else
                                   throw(ArgumentError("Unsupported noise type"))
                               end
+                              times, data = generate_toy_dataset(beta_values, valid_change_points, γ, u0, (0.0, data_length), noise_level, noise)
+                              plot(data)
                               for penalty in penalty_values
                                   # Generate dataset with the specified length
-                                  times, data = generate_toy_dataset(beta_values, valid_change_points, γ, u0, (0.0, data_length), noise_level, noise)
+                                  #times, data = generate_toy_dataset(beta_values, valid_change_points, γ, u0, (0.0, data_length), noise_level, noise)
                                   global data_CP = reshape(Float64.(data), 1, :)
-                                  n = length(data_CP)
+                                  global n = length(data_CP)
                                   @show noise_level
                                   @show noise_type 
                                   @show penalty
@@ -163,6 +169,7 @@ end
                                   @show tspan = (0.0, data_length)
                                   global tspan = (0.0, data_length)
                                   # Measure the runtime of the change point detection method
+                                  plot(data)
                                   start_time = time()
                                   detected_cps, pars_cps = detect_changepoints(
                                     objective_function,
@@ -190,8 +197,8 @@ end
                   end
               end
           end
-      return results
-  end
+    return results
+end
       
   
   ######
@@ -203,7 +210,7 @@ begin
 noise_levels = [0, 1, 10, 20]
 noise_types = ["Gaussian", "Uniform"]
 penalty_values = [BIC_penalty1, BIC_penalty2, BIC_penalty3, BIC_penalty4]
-change_point_counts = [0, 1, 2, 3]
+change_point_counts = [1, 2, 3]
 data_lengths = [70, 130, 160, 200, 250]
 beta_values = [0.00009, 0.00014, 0.00025, 0.0005]
 change_points = [50.0, 100.0, 150.0]

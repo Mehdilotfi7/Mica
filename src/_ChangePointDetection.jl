@@ -109,7 +109,7 @@ Returns a tuple of loss values and corresponding best chromosomes.
 function evaluate_segment(
     objective_function, a::Int, b::Int, CP::Vector{Int}, bounds,
     chromosome::Vector{Float64}, parnames, ga, min_length::Int, step::Int,
-    n_global::Int, n_segment_specific::Int,
+    n_global::Int, n_segment_specific::Int, n::Int,
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64},
@@ -195,7 +195,7 @@ function detect_changepoints(
         a, b = pop!(tau)
         x, y = evaluate_segment(
             objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, min_length, step,
-            n_global, n_segment_specific,
+            n_global, n_segment_specific, n,
             model_manager, loss_function, data,
             penalty_fn
         )
