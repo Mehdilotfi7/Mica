@@ -182,6 +182,9 @@ results = []
 end
 
 # Save to CSV
-CSV.write("benchmark_results.csv", DataFrame(results))
+using CSV
+using DataFrames
+CSV.write("results/benchmark_results.csv", DataFrame(results))
+
 
 

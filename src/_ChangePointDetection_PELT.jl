@@ -127,3 +127,119 @@ function detect_changepoints_PELT(
 end
 
 end  # Module End
+
+
+
+
+#########################################################################################################
+
+module ChangePointDetection
+
+using Evolutionary, Random
+
+"""
+# PELT-Based Change Point Detection (Model-Aware)
+
+This module implements a model-fitting variant of the PELT algorithm
+for detecting changepoints in time-series data. Unlike statistical PELT,
+it integrates expensive model-based segment evaluation via optimization.
+"""
+
+# ----------------------------------------------------------------------
+# optimize_with_changepoints
+# ----------------------------------------------------------------------
+function optimize_with_changepoints(
+    objective_function, chromosome, parnames, CP, bounds, ga,
+    n_global, n_segment_specific,
+    model_manager, loss_function, data;
+    options=Evolutionary.Options(show_trace=false)
+)
+    wrapped_obj(chrom) = objective_function(
+        chrom, CP, parnames, n_global, n_segment_specific,
+        model_manager, loss_function, data
+    )
+    Random.seed!(1234)
+    result = Evolutionary.optimize(wrapped_obj, BoxConstraints(bounds...), chromosome, ga, options)
+    return Evolutionary.minimum(result), Evolutionary.minimizer(result)
+end
+
+# ----------------------------------------------------------------------
+# prune_candidates!
+# ----------------------------------------------------------------------
+function prune_candidates!(F, candidates, seg_costs, t)
+    return candidates[ (F[candidates .+ 1] .+ seg_costs) .< F[t+1] ]
+end
+
+# ----------------------------------------------------------------------
+# evaluate_segment_cost (memoized)
+# ----------------------------------------------------------------------
+const cost_cache = Dict{Tuple{Int,Int}, Float64}()
+
+function evaluate_segment_cost(
+    objective_function, CP, bounds, chromosome, parnames, ga,
+    n_global, n_segment_specific, model_manager, loss_function,
+    data, penalty_fn, a::Int, b::Int, n::Int
+)
+    key = (a, b)
+    if haskey(cost_cache, key)
+        return cost_cache[key]
+    end
+    new_cp = sort([CP; b])
+    loss, _ = optimize_with_changepoints(
+        objective_function, chromosome, parnames, new_cp, bounds, ga,
+        n_global, n_segment_specific, model_manager, loss_function, data
+    )
+    segment_lengths = diff([0; new_cp; n])
+    pen = call_penalty_fn(penalty_fn, p=n_segment_specific, n=n, CP=new_cp,
+                          segment_lengths=segment_lengths, num_segments=length(new_cp)+1)
+    cost = loss + pen
+    cost_cache[key] = cost
+    return cost
+end
+
+# ----------------------------------------------------------------------
+# detect_changepoints_PELT
+# ----------------------------------------------------------------------
+function detect_changepoints_PELT(
+    objective_function, n::Int, n_global::Int, n_segment_specific::Int,
+    model_manager, loss_function, data, initial_chromosome::Vector{Float64},
+    parnames, bounds::Tuple{Vector{Float64}, Vector{Float64}},
+    ga, min_length::Int, penalty_fn::Function = default_penalty
+)
+    F = fill(Inf, n+1)
+    F[1] = -log(n)
+    chpts = fill(0, n)
+    R = Int64[0]  # Candidate change points
+    CP = Int[]
+
+    loss_val, _ = optimize_with_changepoints(
+        objective_function, initial_chromosome, parnames, CP, bounds, ga,
+        n_global, n_segment_specific, model_manager, loss_function, data
+    )
+    update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
+
+    for t in 2:n
+        valid_cpts = filter(x -> (t - x) >= min_length, R)
+        seg_costs = [evaluate_segment_cost(
+            objective_function, CP, bounds, initial_chromosome, parnames, ga,
+            n_global, n_segment_specific, model_manager, loss_function,
+            data, penalty_fn, x, t, n
+        ) for x in valid_cpts]
+
+        F[t+1], tau = findmin(F[valid_cpts .+ 1] .+ seg_costs)
+        chpts[t] = valid_cpts[tau]
+        R = prune_candidates!(F, valid_cpts, seg_costs, t)
+        push!(R, t - 1)
+    end
+
+    last = chpts[n]
+    while last > 0
+        push!(CP, last)
+        last = chpts[last]
+    end
+    sort!(CP)
+
+    return CP, F[n+1]
+end
+
+end  # module
