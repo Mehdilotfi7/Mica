@@ -231,9 +231,10 @@ more also it is fast. i think the proble is with benchmarking
 08.06.2025
 
 - now need to visualise the results for accuracy and run time in heatmap ---> done nicely 
-- should i visualize all combination data,sim,cps for supp material?  
+- should i visualize all combination data,sim,cps for supp material?   ----> done
 - running small covid model.
-- then wind turbine model
+- then wind turbine model.
+- run benchmarking for different penalty type and BIC_10,20,30,...,100?
 
 ___________________________________________________________________________________________________________________________________________________
 ___________________________________________________________________________________________________________________________________________________
