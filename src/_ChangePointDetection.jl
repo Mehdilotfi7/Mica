@@ -205,7 +205,7 @@ function detect_changepoints(
             #pen = custom_penalty(n_segment_specific, b-a, n, CP)
             #@show pen
             minval, idx = findmin(x)
-            #@show idx
+            @show minval, idx
             #pen = custom_penalty(n_segment_specific, minval, loss_val, CP)
             #_ , betas = extract_parameters(y[idx], n_global, n_segment_specific)
             #@show betas
