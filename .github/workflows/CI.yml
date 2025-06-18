@@ -25,12 +25,11 @@ jobs:
         version:
           - '1.11'
           - '1.6'
-          - 'pre'
+          - '1'
         os:
           - ubuntu-latest
         arch:
           - x64
-          - x86
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
