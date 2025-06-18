@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+           fetch-depth: 0
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
@@ -43,6 +45,4 @@ jobs:
             doctest(TSCPDetector)'
       - run: julia --project=docs docs/make.jl
         env:
-          JULIA_PKG_SERVER: ""
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
