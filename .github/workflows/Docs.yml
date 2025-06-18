@@ -13,36 +13,42 @@ on:
     types: [opened, synchronize, reopened]
 
 concurrency:
-  # Skip intermediate builds: always.
-  # Cancel intermediate builds: only if it is a pull request build.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
   docs:
-    #needs: [test]
     name: Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-           fetch-depth: 0
+          fetch-depth: 0
+
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
+
       - name: Use Julia cache
         uses: julia-actions/cache@v2
-      - run: |
+
+      - name: Instantiate docs environment
+        run: |
           julia --project=docs -e '
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
-      - run: |
+
+      - name: Run doctests
+        run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using TSCPDetector
             DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
             doctest(TSCPDetector)'
-      - run: julia --project=docs docs/make.jl
+
+      - name: Build and deploy docs
         env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JULIA_PKG_SERVER: ""
+        run: julia --project=docs docs/make.jl
