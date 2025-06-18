@@ -46,19 +46,19 @@ function AIC_penalty(p, CP)
 end
 =#
 
-function BIC_penalty(p,n)
-    pen = 2 * p * log(n)
-    return pen
-end
+#function BIC_penalty(p,n)
+#    pen = 2 * p * log(n)
+#    return pen
+#end
 
-function custom_penalty(p, ns, n, CP)
-    return 1.0 * p * length(CP) * log(ns) + 10.0 * (ns/n)  
-end
+#function custom_penalty(p, ns, n, CP)
+#    return 1.0 * p * length(CP) * log(ns) + 10.0 * (ns/n)  
+#end
 
-using Distances
-function custom_penalty(p, p1, p2, CP)
-    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
-end
+#using Distances
+#function custom_penalty(p, p1, p2, CP)
+#    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
+#end
 
 
 

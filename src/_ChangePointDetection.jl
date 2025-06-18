@@ -50,6 +50,7 @@ end
 # ----------------------------------------------------------------------
 # Function: custom_penalty
 # ----------------------------------------------------------------------
+#=
 function custom_penalty(p, n, CP)
     seg_lengths = diff([0; CP; n])
     imbalance_penalty = length(seg_lengths) > 1 ? std(seg_lengths) : 0.0  # Avoid NaN for single values
@@ -64,17 +65,16 @@ function custom_penalty(p, dl, l0, CP)
     return 2.0 * p * length(CP) + 2.0 * (1-(dl/l0))^2
 end
 
-using Distances
-function custom_penalty(p, p1, p2, CP)
-    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
-end
+#function custom_penalty(p, p1, p2, CP)
+#    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
+#end
 
 function BIC_penalty(p,n)
     pen = 100.0 * p * log(n)
     return pen
 end
 
-
+=#
 
 # ----------------------------------------------------------------------
 # Function: update_bounds!

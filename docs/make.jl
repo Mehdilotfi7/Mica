@@ -22,12 +22,12 @@ makedocs(;
     "Genetic algorithms hints" => "GA_hints.md",
     "Reference" => "references.md"
   ],
-  checkdocs = :warn,
-  versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]  # ← Add this
+  checkdocs = :warn
 )
 
 deploydocs(
   repo = "github.com/mehdilotfi7/TSCPDetector.jl",
   devbranch = "main",
-  push_preview = false
+  push_preview = false,
+  versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
 )
