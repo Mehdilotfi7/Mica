@@ -1,4 +1,4 @@
-module ChangePointDetection
+#module ChangePointDetection
 
 using Evolutionary, Random
 
@@ -126,7 +126,7 @@ function detect_changepoints_PELT(
     return CP, F[n+1]
 end
 
-end  # Module End
+#end  # Module End
 
 
 

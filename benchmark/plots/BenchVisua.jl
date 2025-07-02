@@ -58,7 +58,7 @@ function parse_cps_pars(s)
 end
 
 # Load CSV
-df = CSV.read("results/benchmark_results.csv", DataFrame)
+df = CSV.read("benchmark/results/benchmark_results_all_configs.csv", DataFrame)
 
 
 true_β_values = [0.00009, 0.00014, 0.00025, 0.0005]
@@ -134,6 +134,7 @@ chunks = partition(plots, 30)
             left_margin = 4mm
         )
     
-        savefig(final_plot, "plots/cp_results_page_$i.pdf")
+        savefig(final_plot, "benchmark/plots/cp_results_page_$i.pdf")
+
     end
     

@@ -107,6 +107,16 @@ function BIC_10(p,n)
     return pen
 end
 
+function BIC_20(p,n)
+    pen = 20.0 * p * log(n)
+    return pen
+end
+
+function BIC_30(p,n)
+    pen = 30.0 * p * log(n)
+    return pen
+end
+
 function BIC_100(p,n)
     pen = 100.0 * p * log(n)
     return pen
@@ -151,16 +161,16 @@ function benchmark_one(noise_level, noise_type, penalty, change_point_count, dat
     cps_pars = (detected_cps, pars_cps)
 
     # Save full experiment data to file
-    filename = "results/run_n$(noise_level)_t$(noise_type)_p$(change_point_count)_l$(data_length).jld2"
-    @save filename times data detected_cps pars_cps valid_change_points runtime precision recall f1 noise_level noise_type data_length change_point_count penalty
+    #filename = "results/run_n$(noise_level)_t$(noise_type)_p$(change_point_count)_l$(data_length).jld2"
+    #@save filename times data detected_cps pars_cps valid_change_points runtime precision recall f1 noise_level noise_type data_length change_point_count penalty
     return (;change_point_count, data_length, noise_level, noise_type, penalty=string(penalty),
         runtime, precision, recall, f1, cps_pars)
 end
 
 # Define parameters
-noise_levels = [0, 1, 10, 20, 100]
+noise_levels = [0, 1, 10, 20, 30, 40, 100]
 noise_types = ["Gaussian", "Uniform"]
-penalty_values = [BIC_0, BIC_1, BIC_10, BIC_100]
+penalty_values = [BIC_0, BIC_1, BIC_10, BIC_20, BIC_30, BIC_100]
 change_point_counts = [1, 2, 3]
 data_lengths = [70, 130, 160, 200, 250]
 
@@ -184,7 +194,36 @@ end
 # Save to CSV
 using CSV
 using DataFrames
-CSV.write("results/benchmark_results.csv", DataFrame(results))
+CSV.write("benchmark/results/benchmark_results_all_configs.csv", DataFrame(results))
 
 
+#=
+# Read the CSV files into DataFrames
+df1 = CSV.read("benchmark/results/benchmark_results.csv", DataFrame)
+df2 = CSV.read("benchmark/results/benchmark_results_2.csv", DataFrame)
 
+# Vertically concatenate the DataFrames
+combined_df = vcat(df1, df2)
+CSV.write("benchmark/results/benchmark_results_both.csv", DataFrame(combined_df))
+
+valid_combos_all
+already_run = Set(vcat(valid_combos1, valid_combos2))
+
+remaining_combos = [x for x in valid_combos_all if !(x in already_run)]
+
+# --- Run benchmark on remaining only
+results_rem = []
+@showprogress for x in remaining_combos
+    push!(results_rem, benchmark_one(x...))
+end
+
+CSV.write("benchmark/results/benchmark_results_rem.csv", DataFrame(results_rem))
+
+
+df1 = CSV.read("benchmark/results/benchmark_results_both.csv", DataFrame)
+df2 = CSV.read("benchmark/results/benchmark_results_rem.csv", DataFrame)
+
+combined_df = vcat(df1, df2)
+CSV.write("benchmark/results/benchmark_results_all_configs.csv", DataFrame(combined_df))
+
+=#

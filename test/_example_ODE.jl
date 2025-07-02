@@ -11,7 +11,7 @@ using Random
 function sirmodel!(du, u, p, t)
     S, I, R = u
     β, γ = p
-    @show β, γ
+    #@show β, γ
     du[1] = -β * S * I
     du[2] = β * S * I - γ * I
     du[3] = γ * I
@@ -20,7 +20,7 @@ end
 # ----------------------------
 # Toy data generation
 # ----------------------------
-function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
+function generate_toy_dataset(beta_values, change_points, γ, u0, tspan, noise_level, noise)
     data_CP = []
     all_times = []
 
@@ -47,7 +47,7 @@ function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
         #@show typeof(sol)
 
         # Append the solution to the data
-        data_CP = vcat(data_CP, sol[2,:])
+        data_CP = vcat(data_CP, sol[2,:] + noise_level * noise(length(sol.t)))
         all_times = vcat(all_times, sol.t)
         #@show typeof(data_CP)
 
@@ -59,19 +59,23 @@ function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
     return all_times, abs.(data_CP)
 end
 
-
+begin
 β_values = [0.00009, 0.00014, 0.00025, 0.0005]
-β_values = [0.00009, 0.00014]
+#β_values = [0.00009, 0.00014]
 change_points_true = [50, 100, 150]
-change_points_true = [50]
+#change_points_true = [50]
 γ = 0.7
 u0 = [9999.0, 1.0, 0.0]
 tspan = (0.0, 250.0)
-tspan = (0.0, 70.0)
-
+#tspan = (0.0, 70.0)
+Random.seed!(1234)
+noise_level = 20
+noise = rand
+end
 # Generate synthetic data
-times, data = generate_toy_dataset(β_values, change_points_true, γ, u0, tspan)
+times, data = generate_toy_dataset(β_values, change_points_true, γ, u0, tspan, noise_level, noise)
 data_M = reshape(Float64.(data), 1, :)
+
 plot(data_M[1,:])
 #times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
 #plot!(sim) 
@@ -82,7 +86,7 @@ plot(data_M[1,:])
 function sirmodel!(du, u, p, t)
     S, I, R = u
     β, γ = p.β , p.γ
-    @show β, γ
+    #@show β, γ
     du[1] = -β * S * I
     du[2] = β * S * I - γ * I
     du[3] = γ * I
@@ -103,10 +107,10 @@ function loss_function(observed, simulated)
 end
 
 
-function loss_function(observed, simulated)
-    simulated = simulated[2:2,:]    
-    return sum(abs2, (observed.- simulated))
-end
+#function loss_function(observed, simulated)
+#    simulated = simulated[2:2,:]    
+#    return sum(abs2, (observed.- simulated))
+#end
 
 begin
 
@@ -154,18 +158,21 @@ end
 # not penalizing and setting seed, i get the same results all the time.
 # 281.751858 seconds
 # [50, 100, 130, 140, 150, 190]
+[50, 100, 240] # noise=30
+[50, 60, 90, 100, 180] # noise=20
+[50, 100, 130, 150, 200, 220, 240] # noise = 10
 
 
+##################################################
+# using PELT
 
-
-function sirmodel!(du, u, p, t)
-    S, I, R = u
-    β, γ = p
-    du[1] = -β * S * I
-    du[2] = β * S * I - γ * I
-    du[3] = γ * I
-end
-
-plot(data_M[1,:])
-times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
-plot!(sim) 
+segment_cost_pelt(
+    τ, t,
+    chromosome,
+    parnames,
+    n_global,
+    n_segment_specific,
+    model_manager,
+    loss_function,
+    data
+)
