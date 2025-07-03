@@ -5,6 +5,15 @@
 </p>
 
 <p align="center">
+
+   ![Build Status](https://travis-ci.org/Mehdilotfi7/TSCPDetector.svg?branch=main)
+   [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
+   [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
+   [![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
+
+</p>
+
+<p align="center">
 ![Build Status](https://travis-ci.org/Mehdilotfi7/TSCPDetector.svg?branch=main)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
 [![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
