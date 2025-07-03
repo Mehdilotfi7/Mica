@@ -31,6 +31,6 @@ Supports:
 ```julia
 using Pkg
 Pkg.add("TSCPDetector")
-
+```
 ## Package_development
 This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2024. It is currently being maintained and extended by Mehdi Lotfi.
