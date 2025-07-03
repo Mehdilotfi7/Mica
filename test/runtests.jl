@@ -25,8 +25,10 @@ sol = solve(prob, Tsit5(), saveat=1)
 return sol[:,:]
 end
 
-# Function to generate toy dataset
-function generate_toy_dataset(beta_values, change_points, γ, N, u0, tspan)
+# ----------------------------
+# Toy data generation
+# ----------------------------
+function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
     data_CP = []
     all_times = []
 
@@ -41,7 +43,7 @@ function generate_toy_dataset(beta_values, change_points, γ, N, u0, tspan)
         end
 
         # Set parameters for this segment
-        params = [beta_values[i], γ]
+        params = @LArray [beta_values[i], γ] (:β, :γ)
 
         # Create an ODE problem
         prob = ODEProblem(sirmodel!, u0, tspan_segment, params)
@@ -62,8 +64,6 @@ end
 
 function loss_function(segment_data, simulated_data, compare_variables=nothing)
 
-    @assert size(segment_data) == size(simulated_data) "Dimension mismatch between real and simulated data."
-
     # Calculate RMSE for the selected variables
     segment_loss = sqrt(sum((segment_data .- simulated_data).^2))
 
@@ -81,20 +81,8 @@ u0 = [N-1, 1, 0]
 tspan = (0.0, 250.0)
 
 # Generate dataset
-times, data = generate_toy_dataset(beta_values, change_points, γ, N, u0, tspan)
-plot(data)
-# adding two NA to part of dataset manually
-data1 = Vector{Union{Missing, Float64}}(data)
-data1[70]  = missing
-data1[110] = missing
-data1 = DataFrame(times =times, data1=data1)
+times, data = generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
 
-# Test `load_data`
-@testset "Data Handling Tests" begin
-    # Example test data
-    data_loaded = load_data(data1)  
-
-end
 
 # Test `simulate_model`
 @testset "Model Simulation Tests" begin

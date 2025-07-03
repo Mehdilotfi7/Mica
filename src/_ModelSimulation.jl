@@ -1,9 +1,5 @@
 # module _ModelSimulation
 
-# needed pacjages
-#using DifferentialEquations
-#using DataFrames
-
 # =============================================================================
 # Model Specification Types
 # =============================================================================
@@ -12,6 +8,7 @@
 Abstract base type for all model specifications.
 """
 abstract type AbstractModelSpec end
+
 
 """
 Specification for an ODE (Ordinary Differential Equation) model.
@@ -72,7 +69,7 @@ Simulates an ODEModelSpec by solving the ODE system.
 - `model::ODEModelSpec`: An ODE model specification.
 
 # Returns
-- `DataFrame`: Simulated results over time.
+- Simulated results over time.
 """
 function simulate_model(model::ODEModelSpec)
     return model.model_function(model.params, model.tspan, model.initial_conditions)
@@ -85,7 +82,7 @@ Simulates a DifferenceModelSpec by iterating the discrete equation.
 - `model::DifferenceModelSpec`: A Difference model specification.
 
 # Returns
-- `DataFrame`: Simulated results over discrete time steps.
+- Simulated results over discrete time steps.
 """
 function simulate_model(model::DifferenceModelSpec)
     return model.model_function(model.params, model.initial_conditions, model.num_steps, model.extra_data)
@@ -98,7 +95,7 @@ Simulates a RegressionModelSpec by evaluating the regression model.
 - `model::RegressionModelSpec`: A Regression model specification.
 
 # Returns
-- `DataFrame`: Simulated outputs.
+- Simulated outputs.
 """
 function simulate_model(model::RegressionModelSpec)
     return model.model_function(model.params, model.time_steps)
@@ -119,17 +116,17 @@ Defines the dynamics `du/dt = -p * u`.
 - `u0::Vector{Float64}`: Initial condition vector.
 
 # Returns
-- `DataFrame`: Time and state variable evolution.
+- `Matrix`: state variable evolution.
 """
 function exponential_ode_model(params, tspan, u0)
     function ode!(du, u, p, t)
-        du[1] = -p[1] * u[1]
+        du[1] = -params.p * u[1]
     end
 
     prob = ODEProblem(ode!, u0, tspan, params[:p])
     sol = solve(prob, Tsit5(), saveat=1.0)
 
-    return DataFrame(time=sol.t, state=sol[1, :])
+    return sol[:,:]
 end
 
 """
@@ -162,7 +159,7 @@ function example_difference_model(params, initial_conditions, num_steps, extra_d
     end
 
     time = 1:num_steps
-    return DataFrame(time=time, state=state_values)
+    return state_values[:,:]
 end
 
 """

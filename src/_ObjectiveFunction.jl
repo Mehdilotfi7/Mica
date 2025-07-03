@@ -22,46 +22,6 @@ function extract_parameters(chromosome::Vector{T}, n_global::Int, n_segment_spec
     return global_parameters, segment_parameters
 end
 
-#=
-function BIC_penalty(p, n, CP)
-    pen =  0.8134 * p * log(n) * length(CP)
-    return pen
-end
-
-function BIC_penalty(p, g, n, CP)
-    s = length(CP) + 1
-    total_params = g + p * s
-    return 1.09 * total_params * log(n)
-end
-
-
-function BIC_penalty(p,n)
-    pen = 2 * p * log(n)
-    return pen
-end
-
-function AIC_penalty(p, CP)
-    pen = p * length(CP)
-    return pen
-end
-=#
-
-#function BIC_penalty(p,n)
-#    pen = 2 * p * log(n)
-#    return pen
-#end
-
-#function custom_penalty(p, ns, n, CP)
-#    return 1.0 * p * length(CP) * log(ns) + 10.0 * (ns/n)  
-#end
-
-#using Distances
-#function custom_penalty(p, p1, p2, CP)
-#    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
-#end
-
-
-
 # =============================================================================
 # objective_function
 # =============================================================================
@@ -107,24 +67,21 @@ function objective_function(
 #
        for i in 1:num_segments
 
+           # defing the start and the end of intervals
            idx_start = (i == 1) ? 1 : change_points[i - 1] + 1
            idx_end   = (i > length(change_points)) ? size(data, 2) : change_points[i]
            segment_data = data[:, idx_start:idx_end]
            
-
+           # defining the parameters for each segment including segment specific and constant parameters 
            seg_pars = segment_pars_list[i]
            all_pars = @LArray [constant_pars;seg_pars] parnames
            model_spec = segment_model(model_manager, all_pars, idx_start, idx_end, u0)
 
+           # simulating the model 
            sim_data = simulate_model(model_spec)
+           # computing oveall loss
            total_loss += loss_function(segment_data, sim_data)
-           #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
-           #total_loss += BIC_penalty(length(seg_pars), size(data, 2))
-           #total_loss += AIC_penalty(length(seg_pars), change_points)
-           #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
-           #custom_penalty(length(seg_pars), size(data, 2), change_points)
-           #total_loss += custom_penalty(length(seg_pars), idx_end-idx_start, size(data, 2), change_points)
-
+     
            # Update initial condition if applicable
            u0 = update_initial_condition(model_manager, sim_data)
        end
@@ -140,22 +97,13 @@ function objective_function(
 
         sim_data = simulate_model(model_spec)
         total_loss += loss_function(segment_data, sim_data)  
-        #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
-        #total_loss += BIC_penalty(size(data, 2), change_points)        
-        #total_loss += BIC_penalty(length(seg_pars), size(data, 2), change_points)
-        #total_loss += AIC_penalty(length(seg_pars), change_points)
-        #total_loss += BIC_penalty(length(seg_pars), size(data, 2))
-        #total_loss += BIC_penalty(length(seg_pars), length(constant_pars), size(data, 2), change_points)
-        #custom_penalty(length(seg_pars), size(data, 2), change_points)
-        #total_loss += custom_penalty(length(seg_pars), idx_end-idx_start, size(data, 2), change_points)
-
     end
 
     return total_loss
 end
 
 # =============================================================================
-# Wrapped Objective (optional)
+# Wrapped Objective
 # =============================================================================
 """
     wrapped_obj_function(chromosome)

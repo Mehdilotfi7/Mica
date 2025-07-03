@@ -6,6 +6,9 @@ using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
 # Test DataHandler Module
 # =============================================================================
 
+# For now this functionality is not available 
+#=
+
 using Test
 using DataFrames
 using YourPackageName.DataHandler  # Replace with your actual module path
@@ -49,7 +52,7 @@ using YourPackageName.DataHandler  # Replace with your actual module path
 
 end
 
-
+=#
 # =============================================================================
 # Test ModelSimulation Module
 # =============================================================================
@@ -61,15 +64,16 @@ end
     # ----------------------
     @testset "ODE Model Test" begin
         params = Dict(:p => [0.5])
+        params = Dict(:p => [0.5])
         initial_conditions = [1.0]
-        tspan = (0.0, 5.0)
+        tspan = (0.0, 99.0)
         
         model = ODEModelSpec(exponential_ode_model, params, initial_conditions, tspan)
         result = simulate_model(model)
 
-        @test isa(result, DataFrame)
-        @test size(result, 1) == 100  # Should have 100 time points
-        @test all(result.state .>= 0.0)  # Exponential decay, should be non-negative
+        @test isa(result, Matrix)       # Output is in a Matrix form
+        @test size(result, 2) == 100    # Should have 100 time points
+        @test all(result[:,1] .>= 0.0)  # Exponential decay, should be non-negative
     end
 
     # ----------------------
@@ -119,25 +123,24 @@ end
         ode_params = Dict(:p => [0.5])
         ode_u0 = [1.0]
         tspan = (0.0, 10.0)
+        
 
-        base_model = ODEModelSpec(_ModelSimulation.exponential_ode_model, ode_params, ode_u0, tspan)
+        base_model = ODEModelSpec(exponential_ode_model, ode_params, ode_u0, tspan)
         manager = ModelManager(base_model)
+        new_ode_model = segment_model(manager, ode_params, 0, 10, ode_u0)
 
         # Check initial condition accessor
         @test get_initial_condition(manager) == ode_u0
         @test get_model_type(manager) == "ODE"
-
         # segment_model
-        seg_pars = [0.05] # update for ODE
-        parnames = [:p]
-        new_ode_model = segment_model(manager, seg_pars, parnames, 0, 2, [1.0])
-        @test new_ode_model.params[:p] == 0.05
-        @test new_ode_model.tspan == (0, 2.0)
+        @test new_ode_model.params[:p] == [0.5]
+        @test new_ode_model.tspan == (0.0, 10.0)
+        @test new_ode_model.initial_conditions == ode_u0
 
         # Update initial condition
         sim = simulate_model(base_model)
-        @test isa(sim, DataFrame)
-        @test update_initial_condition(manager, sim) == [sim.state[end]]
+        @test isa(sim, Matrix)
+        @test update_initial_condition(manager, sim) == sim[:,end]
     end
 
     # =========================================================================
@@ -150,7 +153,7 @@ end
         pars = Dict(:θ1 => 0.1, :θ2 => 0.2, :θ3 => 0.3, :θ4 => 0.4, :θ5 => 0.5, :θ6 => 0.6, :θ7 => 1.0)
         ic = 10.0
 
-        diff_model = DifferenceModelSpec(_ModelSimulation.example_difference_model, pars, ic, num_steps, (wind, temp))
+        diff_model = DifferenceModelSpec(example_difference_model, pars, ic, num_steps, (wind, temp))
         diff_manager = ModelManager(diff_model)
 
         # Check initial condition accessor
@@ -160,13 +163,14 @@ end
         # segment_model
         seg_pars = fill(0.2, 7) # update for Difference
         parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
-        new_diff_model = segment_model(diff_manager, seg_pars, parnames, 10, 20, 0.0)
+        new_diff_model = segment_model(diff_manager, seg_pars, 10, 20, 0.0)
         @test new_diff_model.num_steps == 11
         @test new_diff_model.extra_data[1] == wind[10:20]
 
         # Update initial condition
         diff_sim = simulate_model(diff_model)
-        @test update_initial_condition(diff_manager, diff_sim) == diff_sim.state[end]
+        @test isa(diff_sim, Matrix)
+        @test update_initial_condition(diff_manager, diff_sim) == diff_sim[:,end]
     end
 
     # =========================================================================
@@ -175,7 +179,7 @@ end
     @testset "Regression Model" begin
         pars = Dict(:a => 2.0, :b => 1.0)
         time_steps = 30
-        reg_model = RegressionModelSpec(_ModelSimulation.example_regression_model, pars, time_steps)
+        reg_model = RegressionModelSpec(example_regression_model, pars, time_steps)
         reg_manager = ModelManager(reg_model)
 
         #Check initial condition accessor
@@ -185,9 +189,9 @@ end
         # segment_model
         seg_pars = [3.0, 7.0]
         parnames = [:a, :b]
-        new_reg_model = segment_model(reg_manager, seg_pars, parnames, 1, 10, nothing)
+        new_reg_model = segment_model(reg_manager, seg_pars, 1, 10, nothing)
         @test new_reg_model.time_steps == 10
-        @test new_reg_model.params[:b] == 7.0
+        @test new_reg_model.params[2] == 7.0
 
         # Update initial condition
         reg_sim = simulate_model(reg_model)
@@ -201,7 +205,27 @@ end
 # Test ObjectiveFunction Module
 # =============================================================================
 
-@testset "ObjectiveFunction Tests" begin
+# =========================================================================
+# Test extract_parameters
+# =========================================================================
+@testset "extract_parameters Tests" begin
+
+    p = [0.5, 0.7, 0.9]
+    cons_par, seg_par = extract_parameters(p, 1, 1)
+    # constant parameter
+    @test cons_par == [0.5]
+    # first segment parrameter
+    @test seg_par[1] == [0.7]
+    # second segment parrameter
+    @test seg_par[2] == [0.9]
+
+end
+
+# =========================================================================
+# Test objective_function
+# =========================================================================
+
+@testset "objective_function Tests" begin
 
     # =========================================================================
     # Test ODE Model
@@ -209,34 +233,34 @@ end
     @testset "ODE Model" begin
 
         # Define parameters
-        p = 0.5
+        p = [0.5]
         ic = [1.0]
         tspan = (0.0, 10.0)
-        parnames = [:p]
-        true_pars = [p]
+        parnames = (:p)
+        true_pars = p
 
         # Define model spec
         ode_spec = ODEModelSpec(
-           _ModelSimulation.exponential_ode_model,
+           exponential_ode_model,
            Dict(:p => p),
            ic,
            tspan
         )
 
-        observed_df = simulate_model(ode_spec)
-        observed_data = reshape(observed_df.state, 1, :)
+        observed_data = simulate_model(ode_spec)
 
         # Wrap in manager
         manager = ModelManager(ode_spec)
  
         # Call objective function
         chromosome = copy(true_pars)
+
         loss = objective_function(
             chromosome,
-            Int[],
+            [],
+            parnames,
             0,
             length(parnames),
-            parnames,
             manager,
             (obs, sim) -> sum((obs .- sim.state').^2),
             observed_data

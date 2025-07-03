@@ -13,7 +13,6 @@ include("_ModelHandling.jl")
 include("_ObjectiveFunction.jl")
 include("_ChangePointDetection.jl")
 include("penalty.jl")
-#include("_Visualisation.jl")
 
 # Export necessary functions
 export AbstractModelSpec, ODEModelSpec, DifferenceModelSpec, RegressionModelSpec, simulate_model, exponential_ode_model,

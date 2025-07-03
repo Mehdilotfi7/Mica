@@ -36,45 +36,19 @@ function optimize_with_changepoints(
     data::Matrix{Float64};
     options=Evolutionary.Options(show_trace=false)
 )
+    # calling wrapper function 
     wrapped_obj(chrom) = objective_function(
         chrom, CP, parnames, n_global, n_segment_specific,
         model_manager, loss_function, data
     )
-    #@show chromosome
-    #@show bounds
+
+    # settong seed for reproducibility of the results 
     Random.seed!(1234)
+    #running Genetica algorithms 
     result = Evolutionary.optimize(wrapped_obj, BoxConstraints(bounds...), chromosome, ga, options)
+    # retun  best loss and best parameters 
     return Evolutionary.minimum(result), Evolutionary.minimizer(result)
 end
-
-# ----------------------------------------------------------------------
-# Function: custom_penalty
-# ----------------------------------------------------------------------
-#=
-function custom_penalty(p, n, CP)
-    seg_lengths = diff([0; CP; n])
-    imbalance_penalty = length(seg_lengths) > 1 ? std(seg_lengths) : 0.0  # Avoid NaN for single values
-    return 3.3 * p * length(CP) * log(n)  #+ 0.12 * imbalance_penalty
-end
-
-function custom_penalty(p, ns, n, CP)
-    return 2.0 * p * length(CP) * log(ns) + 0.1 * (ns/n)  
-end
-
-function custom_penalty(p, dl, l0, CP)
-    return 2.0 * p * length(CP) + 2.0 * (1-(dl/l0))^2
-end
-
-#function custom_penalty(p, p1, p2, CP)
-#    return 1.0 * p * length(CP) + 0.01 * (1/euclidean(p1, p2))
-#end
-
-function BIC_penalty(p,n)
-    pen = 100.0 * p * log(n)
-    return pen
-end
-
-=#
 
 # ----------------------------------------------------------------------
 # Function: update_bounds!
@@ -120,8 +94,6 @@ function evaluate_segment(
     for j in (a + min_length):step:(b - min_length)
         new_cp = sort([CP; j])
         @show new_cp
-        # This ensures that garbage doesn’t build up, especially when optimizing many segments.
-        #GC.gc()
         loss, best = optimize_with_changepoints(
             objective_function, chromosome, parnames, new_cp, bounds, ga,
             n_global, n_segment_specific,
@@ -129,8 +101,8 @@ function evaluate_segment(
         )
         @show loss
         @show best
-        #pen = BIC_penalty(n_segment_specific * length(new_cp), 250)
-        # Arguments for penalty
+
+        # calling and adding penalty 
         segment_lengths = diff([0; new_cp; n])
         pen = call_penalty_fn(penalty_fn;
             p=n_segment_specific, n=n, CP=new_cp,
@@ -191,7 +163,6 @@ function detect_changepoints(
     update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
 
     while !isempty(tau)
-        #@show tau
         a, b = pop!(tau)
         x, y = evaluate_segment(
             objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, min_length, step,
@@ -199,22 +170,9 @@ function detect_changepoints(
             model_manager, loss_function, data,
             penalty_fn
         )
-        #@show x,y
+        # Inspiring fro m changepoints.jl package 
         if !isempty(x)
-            #pen = BIC_penalty(n_segment_specific, n_global, n, CP)
-            #pen = custom_penalty(n_segment_specific, b-a, n, CP)
-            #@show pen
             minval, idx = findmin(x)
-            @show minval, idx
-            #pen = custom_penalty(n_segment_specific, minval, loss_val, CP)
-            #_ , betas = extract_parameters(y[idx], n_global, n_segment_specific)
-            #@show betas
-            #p2 = betas[end]
-            #p1 = betas[end-1]
-            #p1 = length(CP) > 1 ? betas[end - 1] : p2
-            #@show p1,p2
-            #pen = custom_penalty(n_segment_specific, p1, p2, CP)
-            #@show pen
             if minval < loss_val
                 chpt = a + (idx * step)
                 push!(CP, chpt)
