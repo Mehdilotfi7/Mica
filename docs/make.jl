@@ -22,9 +22,11 @@ makedocs(;
   checkdocs = :warn
 )
 
-deploydocs(
-  repo = "github.com/mehdilotfi7/TSCPDetector.jl",
-  devbranch = "main",
-  push_preview = false,
-  versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
-)
+#deploydocs(
+#  repo = "github.com/mehdilotfi7/TSCPDetector.jl",
+#  devbranch = "main",
+#  push_preview = false,
+#  versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
+#)
+
+deploydocs(;repo = "github.com/mehdilotfi7/TSCPDetector.jl", push_preview = false)
