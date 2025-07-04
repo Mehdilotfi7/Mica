@@ -1,3 +1,13 @@
+using Pkg
+
+# Activate the docs environment and ensure TSCPDetector is available
+Pkg.activate(@__DIR__)
+Pkg.develop(PackageSpec(path = joinpath(@__DIR__, "..")))
+Pkg.instantiate()
+
+using TSCPDetector
+using Documenter
+
 makedocs(;
   modules = [TSCPDetector],
   doctest = true,
@@ -28,4 +38,3 @@ deploydocs(
   push_preview = false,
   versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
 )
-

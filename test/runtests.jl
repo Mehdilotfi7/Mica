@@ -1,273 +1,470 @@
 using Test
-using TSCPDetector 
-using Evolutionary 
-using DifferentialEquations
-using Plots
+using Evolutionary
+using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
+
+# =============================================================================
+# Test DataHandler Module
+# =============================================================================
+
+# For now this functionality is not available 
+#=
+
+using Test
 using DataFrames
+using YourPackageName.DataHandler  # Replace with your actual module path
 
-# Define the SIR model
-function sirmodel!(du, u, p, t)
-    β, γ = p
-    S, I, R = u
-    du[1] = -β * S * I
-    du[2] = β * S * I - γ * I
-    du[3] = γ * I
-  end
+@testset "DataHandler Module Tests" begin
 
-function example_ode_model(params, time, u0)
-# Define the ODE problem
-prob = ODEProblem(sirmodel!, u0, (time[1], time[end]), params)
-    
-# Solve the ODE problem
-sol = solve(prob, Tsit5(), saveat=1)
-
-# Return the result as a DataFrame
-return sol[:,:]
-end
-
-# ----------------------------
-# Toy data generation
-# ----------------------------
-function generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
-    data_CP = []
-    all_times = []
-
-    for i in 1:length(change_points)+1
-        # Define time span for this segment
-        if i == 1
-            tspan_segment = (0.0, change_points[i])  # From 0 to first change point
-        elseif i == length(change_points)+1
-            tspan_segment = (change_points[i-1]+1.0, tspan[2])  # From last change point to the end
-        else
-            tspan_segment = (change_points[i-1]+1.0, change_points[i])  # Between two change points
-        end
-
-        # Set parameters for this segment
-        params = @LArray [beta_values[i], γ] (:β, :γ)
-
-        # Create an ODE problem
-        prob = ODEProblem(sirmodel!, u0, tspan_segment, params)
-
-        # Solve the ODE
-        sol = solve(prob, saveat = 1.0)
-
-        # Append the solution to the data
-        data_CP = vcat(data_CP, sol[2,:])
-        all_times = vcat(all_times, sol.t)
-
-        # Update initial conditions for the next segment
-        u0 = sol.u[end]
+    @testset "DataFrame with Missing Values" begin
+        df = DataFrame(x = [1, 2, 3, 4, 5, 6],
+                       y = [10, 20, 30, 40, 50, 60])
+        mat, info = preprocess_data(df)
+        @test size(mat) == (6, 2)
+        @test !info.is_data_vector
     end
 
-    return all_times, abs.(data_CP)
-end
+    @testset "Matrix Input" begin
+        mat_input = [1.0 2.0; 3.0 4.0; 5.0 6.0]
+        mat, info = preprocess_data(mat_input)
+        @test mat == mat_input
+        @test !info.is_data_vector
+    end
 
-function loss_function(segment_data, simulated_data, compare_variables=nothing)
+    @testset "1D Vector Input" begin
+        vec = [1.0, 2.0, 3.0, 4.0]
+        mat, info = preprocess_data(vec)
+        @test mat == reshape(vec, :, 1)
+        @test info.is_data_vector
+    end
 
-    # Calculate RMSE for the selected variables
-    segment_loss = sqrt(sum((segment_data .- simulated_data).^2))
+    @testset "Vector of Vectors Input" begin
+        vvec = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+        mat, info = preprocess_data(vvec)
+        @test size(mat) == (2, 3)
+    end
 
-    return segment_loss
-end
-
-
-
-# Example usage
-beta_values = [0.00009, 0.00014, 0.00025, 0.0005]
-change_points = [50, 100, 150]
-γ = 0.7
-N = 10_000
-u0 = [N-1, 1, 0]
-tspan = (0.0, 250.0)
-
-# Generate dataset
-times, data = generate_toy_dataset(beta_values, change_points, γ, u0, tspan)
-
-
-# Test `simulate_model`
-@testset "Model Simulation Tests" begin
-
-  # Simulate continuous models: an ode model
-
-    # Define model parameters
-    params = Dict(:p => 0.00009)
-    # Defind initial conditions
-    N = 10_000
-    u0 = [N-1, 1, 0]
-    # Define time points
-    time = (0,250)
-    result_ode = simulate_model(example_ode_model, params; initial_conditions = u0, tspan = time)
-
-  # Simulate discrete models: a difference equations model
-
-    num_steps = 200
-    initial_conditions = 0.5
-    params = Dict(:θ1 => 0.5,:θ2 => 1.2,:θ3 => 0.8,:θ4 => 1.5,:θ5 => 0.9,:θ6 => 2.0,:θ7 => 1.1)
-    # Create extra_data with two vectors of positive random values
-    extra_data = [rand(200) * 10 for _ in 1:2]
-    result_difference_equations = simulate_model(example_difference_model, params; initial_conditions=initial_conditions,
-                                                 extra_data=extra_data,num_steps = num_steps)
-
-  # Simulate time series models: a regression model
-
-    params = Dict(:a => 0.5,:b => 1.2)
-    time = 100
-    result_linear_regression = simulate_model(example_regression_model, params; time = time)
+    @testset "DataFrame without Missing Values" begin
+        df_nomissing = DataFrame(a = 1:3, b = 4:6)
+        mat, info = preprocess_data(df_nomissing)
+        @test mat == Matrix(df_nomissing)
+        @test !info.is_data_vector
+    end
 
 end
 
-# Test `segment_loss`
-@testset "Segment loss Function Tests" begin
-   
-   segment_data   = data + rand(251)
-   simulated_data = data
-   segment_loss(segment_data, simulated_data, loss_function)   
-   
+=#
+# =============================================================================
+# Test ModelSimulation Module
+# =============================================================================
+
+@testset "ModelSimulation Tests" begin
+
+    # ----------------------
+    # Test ODE Model
+    # ----------------------
+    @testset "ODE Model Test" begin
+        params = Dict(:p => [0.5])
+        params = Dict(:p => [0.5])
+        initial_conditions = [1.0]
+        tspan = (0.0, 99.0)
+        
+        model = ODEModelSpec(exponential_ode_model, params, initial_conditions, tspan)
+        result = simulate_model(model)
+
+        @test isa(result, Matrix)       # Output is in a Matrix form
+        @test size(result, 2) == 100    # Should have 100 time points
+        @test all(result[:,1] .>= 0.0)  # Exponential decay, should be non-negative
+    end
+
+    # ----------------------
+    # Test Difference Model
+    # ----------------------
+    @testset "Difference Model Test" begin
+        params = Dict(:θ1 => 0.1, :θ2 => 0.2, :θ3 => 0.3, :θ4 => 0.4, :θ5 => 0.5, :θ6 => 0.6, :θ7 => 1.0)
+        initial_condition = 10.0
+        num_steps = 50
+        wind_speeds = rand(num_steps)
+        ambient_temperatures = rand(num_steps)
+
+        model = DifferenceModelSpec(example_difference_model, params, initial_condition, num_steps, (wind_speeds, ambient_temperatures))
+        result = simulate_model(model)
+
+        @test isa(result, DataFrame)
+        @test size(result, 1) == num_steps
+    end
+
+    # ----------------------
+    # Test Regression Model
+    # ----------------------
+    @testset "Regression Model Test" begin
+        params = Dict(:a => 2.0, :b => 1.0)
+        time_steps = 30
+
+        model = RegressionModelSpec(example_regression_model, params, time_steps)
+        result = simulate_model(model)
+
+        @test isa(result, DataFrame)
+        @test size(result, 1) == time_steps
+        @test all(result.simulated_values .== params[:a] .* result.time .+ params[:b])
+    end
+
 end
 
-@testset "Extraction Function Tests" begin
+# =============================================================================
+# Test Model Handling Module
+# =============================================================================
 
-    chromosome = [0.7, 0.00009, 0.00014, 0.00025, 0.0005]
-    n_global = 1
-    n_segment_specific = 1
-    extract_parameters(chromosome, n_global, n_segment_specific)
+@testset "Model Handling + Objective Function Tests" begin
+
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+    @testset "ODE Model" begin
+        ode_params = Dict(:p => [0.5])
+        ode_u0 = [1.0]
+        tspan = (0.0, 10.0)
+        
+
+        base_model = ODEModelSpec(exponential_ode_model, ode_params, ode_u0, tspan)
+        manager = ModelManager(base_model)
+        new_ode_model = segment_model(manager, ode_params, 0, 10, ode_u0)
+
+        # Check initial condition accessor
+        @test get_initial_condition(manager) == ode_u0
+        @test get_model_type(manager) == "ODE"
+        # segment_model
+        @test new_ode_model.params[:p] == [0.5]
+        @test new_ode_model.tspan == (0.0, 10.0)
+        @test new_ode_model.initial_conditions == ode_u0
+
+        # Update initial condition
+        sim = simulate_model(base_model)
+        @test isa(sim, Matrix)
+        @test update_initial_condition(manager, sim) == sim[:,end]
+    end
+
+    # =========================================================================
+    # Test Difference Model
+    # =========================================================================
+    @testset "Difference Model" begin
+        num_steps = 50
+        wind = rand(num_steps)
+        temp = rand(num_steps)
+        pars = Dict(:θ1 => 0.1, :θ2 => 0.2, :θ3 => 0.3, :θ4 => 0.4, :θ5 => 0.5, :θ6 => 0.6, :θ7 => 1.0)
+        ic = 10.0
+
+        diff_model = DifferenceModelSpec(example_difference_model, pars, ic, num_steps, (wind, temp))
+        diff_manager = ModelManager(diff_model)
+
+        # Check initial condition accessor
+        @test get_model_type(diff_manager) == "Difference"
+        @test get_initial_condition(diff_manager) == ic
+
+        # segment_model
+        seg_pars = fill(0.2, 7) # update for Difference
+        parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
+        new_diff_model = segment_model(diff_manager, seg_pars, 10, 20, 0.0)
+        @test new_diff_model.num_steps == 11
+        @test new_diff_model.extra_data[1] == wind[10:20]
+
+        # Update initial condition
+        diff_sim = simulate_model(diff_model)
+        @test isa(diff_sim, Matrix)
+        @test update_initial_condition(diff_manager, diff_sim) == diff_sim[:,end]
+    end
+
+    # =========================================================================
+    # Test Regression Model
+    # =========================================================================
+    @testset "Regression Model" begin
+        pars = Dict(:a => 2.0, :b => 1.0)
+        time_steps = 30
+        reg_model = RegressionModelSpec(example_regression_model, pars, time_steps)
+        reg_manager = ModelManager(reg_model)
+
+        #Check initial condition accessor
+        @test get_model_type(reg_manager) == "Regression"
+        @test get_initial_condition(reg_manager) === nothing
+
+        # segment_model
+        seg_pars = [3.0, 7.0]
+        parnames = [:a, :b]
+        new_reg_model = segment_model(reg_manager, seg_pars, 1, 10, nothing)
+        @test new_reg_model.time_steps == 10
+        @test new_reg_model.params[2] == 7.0
+
+        # Update initial condition
+        reg_sim = simulate_model(reg_model)
+        @test update_initial_condition(reg_manager, reg_sim) === nothing
+    end
 end
 
-@testset "Objective Function Function Tests" begin
 
 
-    chromosome = [0.7, 0.00009, 0.00014, 0.00025, 0.0005]
-    change_points = [50, 100, 150]
-    N = 10_000
-    initial_conditions = [N-1, 1, 0]
-    tspan = (0.0, 250.0)
-    n_global = 1
-    n_segment_specific = 1
-    parnames = (:β,  :γ)
-    data_CP = data
-    compare_variables = [2]
+# =============================================================================
+# Test ObjectiveFunction Module
+# =============================================================================
 
+# =========================================================================
+# Test extract_parameters
+# =========================================================================
+@testset "extract_parameters Tests" begin
 
-objective_function(
-    chromosome, 
-    change_points, 
-    n_global, 
-    n_segment_specific, 
-    extract_parameters, 
-    parnames,
-    example_ode_model, 
-    simulate_model, 
-    loss_function, 
-    segment_loss,
-    data_CP,
-    initial_conditions=initial_conditions,
-    tspan=tspan,
-    compare_variables=compare_variables
-)
+    p = [0.5, 0.7, 0.9]
+    cons_par, seg_par = extract_parameters(p, 1, 1)
+    # constant parameter
+    @test cons_par == [0.5]
+    # first segment parrameter
+    @test seg_par[1] == [0.7]
+    # second segment parrameter
+    @test seg_par[2] == [0.9]
 
 end
 
-@testset "Initial optimization Function Tests" begin
+# =========================================================================
+# Test objective_function
+# =========================================================================
 
-    initial_chromosome = [0.69, 0.0002]
-    lower =              [0.1,     0.0]
-    upper =              [0.9,     0.1]
-    change_points = Array{Int64}(undef,0)
-    ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
-    crossoverRate=0.6, mutation = gaussian(0.0001))
-    initial_optimization(objective_function, initial_chromosome, lower, upper, ga, data_CP, tspan,
-    example_ode_model, simulate_model, loss_function, n_global, n_segment_specific, initial_condition, 2)
-end
+@testset "objective_function Tests" begin
 
-# Test to update the chromosome and bounds for segment-specific parameters
-@testset "update_chromosome_bounds! Tests" begin
-    initial_chromosome = [0.69, 0.0002]
-    lower =              [0.1,     0.0]
-    upper =              [0.9,     0.1]
-    n_global = 1
-    n_segment_specific = 1
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+    @testset "ODE Model" begin
 
-    update_chromosome_bounds!(
-      initial_chromosome,
-      lower,
-      upper,
-      n_global,
-      n_segment_specific,
-    )
-end
+        # Define parameters
+        p = [0.5]
+        ic = [1.0]
+        tspan = (0.0, 10.0)
+        parnames = (:p)
+        true_pars = p
 
-# Test Function for evaluate potential change points in a segment
-@testset "evaluate_segment Tests" begin
-    # Example of calling evaluate_segment with all the required arguments
- evaluate_segment(
-      objective_function, 
-      0, 
-      250, 
-      [], 
-      initial_chromosome, 
-      lower, 
-      upper, 
-      ga, 
-      0, 
-      data_CP, 
-      tspan, 
-      example_ode_model, 
-      simulate_model, 
-      loss_function, 
-      n_global, 
-      n_segment_specific, 
-      initial_condition, 
-      2
-    )
-end
+        # Define model spec
+        ode_spec = ODEModelSpec(
+           exponential_ode_model,
+           Dict(:p => p),
+           ic,
+           tspan
+        )
 
-# Test for the Function to update tau (the list of segments to test)
-@testset "update_tau! Tests" begin
-    update_tau!(tau, a, chpt, b, min_length)
-end
+        observed_data = simulate_model(ode_spec)
+
+        # Wrap in manager
+        manager = ModelManager(ode_spec)
  
+        # Call objective function
+        chromosome = copy(true_pars)
 
-@testset "Visualization Tests" begin
-    @test_throws ErrorException plot_results(simulated_data, [1, 2, 3], simulate_model)
+        loss = objective_function(
+            chromosome,
+            [],
+            parnames,
+            0,
+            length(parnames),
+            manager,
+            (obs, sim) -> sum((obs .- sim.state').^2),
+            observed_data
+        )
+
+        @test loss ≈ 0.0 atol=1e-8
+
+    end
+
+    # =========================================================================
+    # Test Difference Model
+    # =========================================================================
+    @testset "Difference Model" begin
+        num_steps = 50
+        wind = rand(num_steps)
+        temp = rand(num_steps)
+        ic = 10.0
+  
+        # True parameters
+        true_pars = [
+        0.1, 0.2, 0.3,
+        0.4, 0.5, 0.6,
+        1.0
+        ]
+        parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
+
+        # Simulate expected state
+        base_model = DifferenceModelSpec(
+           _ModelSimulation.example_difference_model,
+           Dict(zip(parnames, true_pars)),
+           ic,
+           num_steps,
+           (wind, temp)
+        )
+        expected_data = simulate_model(base_model)
+        observed_data = reshape(expected_data.state, 1, :)
+
+        # Wrap model in manager
+        manager = ModelManager(base_model)
+
+        # Chromosome = all params are segment-specific, no constants
+        chromosome = copy(true_pars)
+
+        # Evaluate objective
+        loss = objective_function(
+           chromosome,
+           Int[],          # No change points
+           2,              
+           5,
+           parnames,
+           manager,
+           (obs, sim) -> sum((obs .- sim.state').^2),
+           observed_data
+           )
+
+        @test loss ≈ 0.0 atol=1e-8
+  end
+
+    # =========================================================================
+    # Test Regression Model
+    # =========================================================================
+    @testset "Regression Model" begin
+
+        a, b = 5.0, 2.0
+        time_steps = 20
+        parnames = [:a, :b]
+        true_pars = [a, b]
+
+        # Define regression model
+        reg_model = RegressionModelSpec(
+           _ModelSimulation.example_regression_model,
+           Dict(:a => a, :b => b),
+           time_steps
+       )
+
+       observed_df = simulate_model(reg_model)
+       observed_data = reshape(observed_df.simulated_values, 1, :)
+
+       # Wrap in ModelManager
+       manager = ModelManager(reg_model)
+
+       chromosome = copy(true_pars)
+       loss = objective_function(
+           chromosome,
+           Int[],
+           0,
+           length(parnames),
+           parnames,
+           manager,
+           (obs, sim) -> sum((obs .- sim.simulated_values').^2),
+           observed_data
+        )
+
+    @test loss ≈ 0.0 atol=1e-8
+
+    end
+end
+
+# =============================================================================
+# Test ChangePointDetection Module
+# =============================================================================
+
+@testset "ChangePointDetection Tests" begin
+
+    # =========================================================================
+    # Test ODE Model
+    # =========================================================================
+
+    @testset "ODE Model" begin
+        # Create synthetic ODE test model
+        p = -0.5
+        ic = [1.0]
+        tspan = (1.0, 100.0)
+        parnames = [:p]
+
+        # Define ModelManager for ODE
+        ode_spec = ODEModelSpec(
+           _ModelSimulation.exponential_ode_model,
+           Dict(:p => p),
+           ic,
+           tspan
+        )
+        manager = ModelManager(ode_spec)
+        # Generate synthetic observation
+        obs_df = simulate_model(ode_spec)
+        data = reshape(obs_df.state, 1, :)
+
+        # optimize_with_changepoints
+        @testset "optimize_with_changepoints" begin
+            chromosome = [-0.5]
+            bounds = ([-1.0], [0.0])
+            CP = Int[]
+            n_global = 0
+            n_segment_specific = 1
+        
+            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+            crossoverRate=0.6, mutation = gaussian(0.0001))
+        
+            loss, best = optimize_with_changepoints(
+                objective_function,
+                chromosome,
+                CP,
+                bounds,
+                ga,
+                n_global,
+                n_segment_specific,
+                parnames,
+                manager,
+                (obs, sim) -> sum((obs .- sim.state').^2),
+                data
+            )
+        
+            @test isfinite(loss)
+            @test length(best) == 1
+        end
+
+        # update_bounds!
+        @testset "update_bounds!" begin
+            chromosome = [-0.5]
+            bounds = ([-1.0], [0.0])
+            n_global = 0
+            n_segment_specific = 1
+        
+            update_bounds!(
+                chromosome,
+                bounds,
+                n_global,
+                n_segment_specific,
+                extract_parameters
+            )
+        
+            @test length(chromosome) == 2
+            @test length(bounds[1]) == 2
+            @test length(bounds[2]) == 2
+        end
+
+        # evaluate_segment
+        @testset "evaluate_segment" begin
+            chromosome = [-0.5, -0.5, -0.5]  # Already updated
+            bounds = ([-1.0, -1.0, -1.0], [0.0, 0.0, 0.0])
+            CP = [5]
+            a, b = 1, size(data, 2)
+            step = 2
+            min_length = 10
+            pen = 1.0
+        
+            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            ga = ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
+            crossoverRate=0.6, mutation = gaussian(0.0001))
+        
+            x, y = evaluate_segment(
+                objective_function,
+                a, b, CP, bounds, chromosome, ga, pen, min_length, step,
+                0, 1, parnames, manager, loss_fn, data
+            )
+        
+            @test length(x) == length(y)
+            @test all(isfinite, x)
+        end
+                         
+
+    end
+
 end
 
 
-
-# Test `plot_results`
-@testset "Visualization Tests" begin
-    @test_throws ErrorException plot_results(simulated_data, [1, 2, 3], simulate_model)
-end
-
-# Test `initial_optimization`
-@testset "Initial Optimization Tests" begin
-    loss_val_CP, best_pars = initial_optimization(objective_function, initial_chromosome, lower, upper, ga, [])
-    @test typeof(loss_val_CP) == Float64
-    @test length(best_pars) == length(initial_chromosome)
-end
-
-# Test `update_chromosome_bounds!`
-@testset "Update Chromosome Bounds Tests" begin
-    update_chromosome_bounds!(initial_chromosome, lower, upper, 3, 4)
-    @test length(initial_chromosome) == 3 + 4
-end
-
-# Test `evaluate_segment`
-@testset "Evaluate Segment Tests" begin
-    x, y = evaluate_segment(objective_function, 1, 5, [], initial_chromosome, lower, upper, ga, 1)
-    @test length(x) > 0
-    @test length(y) > 0
-end
-
-# Test `update_tau!`
-@testset "Update Tau Tests" begin
-    tau = [(0, 5)]
-    update_tau!(tau, 0, 3, 5)
-    @test length(tau) == 2
-end
-
-# Test `ChangePointDetector`
-@testset "Change Point Detection Tests" begin
-    CP, best_y = ChangePointDetector(objective_function, n; pen=log(n), initial_chromosome=initial_chromosome, lower=lower, upper=upper, ga=ga)
-    @test length(CP) >= 0
-    @test length(best_y) == length(initial_chromosome)
-end

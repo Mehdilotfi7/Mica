@@ -1,27 +1,34 @@
 module TSCPDetector
 
-using Evolutionary 
+# ========== Dependencies ==========
+using Evolutionary
 using DifferentialEquations
 using LabelledArrays
-using Plots
 
-
-# Include the necessary files
-#include("_DataHandler.jl")
+# ========== Internal Modules ==========
 include("_ModelSimulation.jl")
 include("_ModelHandling.jl")
 include("_ObjectiveFunction.jl")
 include("_ChangePointDetection.jl")
 include("penalty.jl")
 
-# Export necessary functions
-export AbstractModelSpec, ODEModelSpec, DifferenceModelSpec, RegressionModelSpec, simulate_model, exponential_ode_model,
-example_difference_model, example_regression_model,
-ModelManager, get_initial_condition, segment_model, get_model_type,
-extract_parameters, objective_function, wrapped_obj_function, custom_penalty,
-optimize_with_changepoints, update_bounds!, evaluate_segment, detect_changepoints
-call_penalty_fn, method_argnames, default_penalty, BIC_penalty, relative_length_penalty
+# ========== Exported API ==========
 
+# -- Model Specifications --
+export AbstractModelSpec, ODEModelSpec, DifferenceModelSpec, RegressionModelSpec
+export simulate_model, exponential_ode_model
+export example_difference_model, example_regression_model
 
+# -- Model Handling --
+export ModelManager, get_initial_condition, get_model_type, update_bounds!
+export extract_parameters
 
-end # module
+# -- Objective Function & Penalties --
+export objective_function, wrapped_obj_function
+export custom_penalty, call_penalty_fn, method_argnames
+export default_penalty, BIC_penalty, relative_length_penalty
+
+# -- Change Point Detection --
+export segment_model, evaluate_segment, detect_changepoints
+
+end # module TSCPDetector

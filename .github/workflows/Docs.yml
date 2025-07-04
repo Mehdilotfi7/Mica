@@ -16,23 +16,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v1
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
         with:
-          version: "1"
-      - run: |
+          version: "1.10"
+
+      - name: Cache Julia artifacts
+        uses: actions/cache@v3
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-julia-artifacts-${{ hashFiles('docs/Project.toml', 'docs/Manifest.toml') }}
+
+      - name: Install dependencies
+        run: |
           julia --project=docs -e '
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
 
-      - run: |
+      - name: Run doctests
+        run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using TSCPDetector
             DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
             doctest(TSCPDetector)'
-      - run: julia --project=docs docs/make.jl
+
+      - name: Build and deploy documentation
         env:
           JULIA_PKG_SERVER: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=docs docs/make.jl

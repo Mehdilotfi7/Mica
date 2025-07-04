@@ -84,23 +84,5 @@ Bayesian Information Criterion-style penalty.
 """
 BIC_penalty(p, n) = 100.0 * p * log(n)
 
-"""
-imbalance_penalty(p, n, CP)
 
-Penalizes based on the standard deviation of segment lengths.
-"""
-function imbalance_penalty(p, n, CP)
-seg_lengths = diff([0; CP; n])
-imbalance = std(seg_lengths)
-return 3.3 * p * length(CP) * log(n) + 0.12 * imbalance
-end
-
-"""
-relative_length_penalty(p, ns, n, CP)
-
-A custom penalty using segment size relative to full length.
-"""
-function relative_length_penalty(p, ns, n, CP)
-return 2.0 * p * length(CP) * log(ns) + 0.1 * (ns/n)
-end
 
