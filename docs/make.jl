@@ -15,7 +15,7 @@ makedocs(;
     "Getting started" => "getting_started.md",
     "Problem types" => "problems.md",
     "Tutorials" => "tutorial.md",
-    "Examples" => "examples.md",
+    #"Examples" => "examples.md",
     "Custom Loss Functions for Segment Evaluation" => "loss_function.md",
     "Reference" => "references.md"
   ],
@@ -29,4 +29,3 @@ deploydocs(
   versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
 )
 
-#deploydocs(;repo = "github.com/mehdilotfi7/TSCPDetector.jl", push_preview = false)
