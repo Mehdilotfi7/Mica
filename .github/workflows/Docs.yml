@@ -4,18 +4,11 @@ on:
   push:
     branches:
       - main
-    paths:
-    tags:
-      - 'v*'
+    tags: ["*"]
   pull_request:
     branches:
       - main
-    paths:
     types: [opened, synchronize, reopened]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
   docs:
@@ -23,33 +16,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v1
         with:
           version: "1"
-
-      - name: Use Julia cache
-        uses: julia-actions/cache@v2
-
-      - name: Instantiate docs environment
-        run: |
+      - run: |
           julia --project=docs -e '
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
 
-      - name: Run doctests
-        run: |
+      - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using TSCPDetector
             DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
             doctest(TSCPDetector)'
-
-      - name: Build and deploy docs
+      - run: julia --project=docs docs/make.jl
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JULIA_PKG_SERVER: ""
-        run: julia --project=docs docs/make.jl
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
