@@ -1,5 +1,3 @@
-using Documenter, TSCPDetector
-
 makedocs(;
   modules = [TSCPDetector],
   doctest = true,
@@ -15,11 +13,10 @@ makedocs(;
   pages = [
     "Home" => "index.md",
     "Getting started" => "getting_started.md",
-    "Tutorials" => "tutorial.md",
     "Problem types" => "problems.md",
+    "Tutorials" => "tutorial.md",
     "Examples" => "examples.md",
-    "Solver algorithms for ODE models" => "solver_hints_ODE.md",
-    "Genetic algorithms hints" => "GA_hints.md",
+    "Custom Loss Functions for Segment Evaluation" => "loss_function.md",
     "Reference" => "references.md"
   ],
   checkdocs = :warn
