@@ -6,10 +6,10 @@ using DifferentialEquations
 using LabelledArrays
 
 # ========== Internal Modules ==========
-include("_ModelSimulation.jl")
-include("_ModelHandling.jl")
-include("_ObjectiveFunction.jl")
-include("_ChangePointDetection.jl")
+include("ModelSimulation.jl")
+include("ModelHandling.jl")
+include("ObjectiveFunction.jl")
+include("ChangePointDetection.jl")
 include("penalty.jl")
 
 # ========== Exported API ==========
