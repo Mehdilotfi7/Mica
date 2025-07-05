@@ -33,7 +33,7 @@ makedocs(;
 )
 
 deploydocs(
-  repo = "github.com/mehdilotfi7/TSCPDetector.jl",
+  repo = "github.com/mehdilotfi7/TSCPDetector",
   devbranch = "main",
   push_preview = false,
   versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
