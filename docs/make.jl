@@ -12,12 +12,12 @@ makedocs(;
   modules = [TSCPDetector],
   doctest = true,
   linkcheck = false,
-  authors = "Mehdi Lotfi <mehdilotfi.tabrizu@gmail.com>",
-  repo = "https://github.com/mehdilotfi7/TSCPDetector.jl/blob/{commit}{path}#{line}",
+  authors = "Mehdi Lotfi <Mehdilotfi.tabrizu@gmail.com>",
+  repo = "https://github.com/Mehdilotfi7/TSCPDetector.jl/blob/{commit}{path}#{line}",
   sitename = "TSCPDetector.jl",
   format = Documenter.HTML(;
     prettyurls = false,
-    canonical = "https://mehdilotfi7.github.io/TSCPDetector.jl",
+    canonical = "https://Mehdilotfi7.github.io/TSCPDetector.jl",
     assets = ["assets/style.css"],
   ),
   pages = [
@@ -33,7 +33,7 @@ makedocs(;
 )
 
 deploydocs(
-  repo = "github.com/mehdilotfi7/TSCPDetector",
+  repo = "github.com/Mehdilotfi7/TSCPDetector",
   devbranch = "main",
   push_preview = false,
   versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
