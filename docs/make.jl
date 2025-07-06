@@ -25,7 +25,7 @@ makedocs(;
     "Getting started" => "getting_started.md",
     "Problem types" => "problems.md",
     "Tutorials" => "tutorial.md",
-    #"Examples" => "examples.md",
+    "Examples" => "examples.md",
     "Custom Loss Functions for Segment Evaluation" => "loss_function.md",
     "Reference" => "references.md"
   ],
