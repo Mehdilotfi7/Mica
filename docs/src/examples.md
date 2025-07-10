@@ -291,6 +291,7 @@ detected_cp, params = detect_changepoints(
 )
 
 ```
+![Covid Example](fig/covid_ex_docs.png)
 
 ## Example 3: Wind Turbine Performance using DE
 

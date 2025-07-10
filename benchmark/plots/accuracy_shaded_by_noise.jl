@@ -1,24 +1,25 @@
 using CSV, DataFrames, CategoricalArrays, StatsPlots, Plots, Statistics
 
 # Load and clean
-df = CSV.read("benchmark/results/benchmark_results_all_configs.csv", DataFrame)
-df = CSV.read("benchmark/results/benchmark_results_all_configs_sorted.csv", DataFrame)
+#df = CSV.read("benchmark/results/benchmark_results_all_configs.csv", DataFrame)
+#df = CSV.read("benchmark/results/benchmark_results_all_configs_sorted.csv", DataFrame)
 
 
 df = CSV.read("benchmark/results/benchmark_results_all_configs_sorted_added_cp_pars-columns.csv", DataFrame)
 
+#=
 df = filter(row -> 
- (row.noise_level == 10 || row.noise_level == 30 || row.noise_level == 10) &&
+ (row.noise_level == 20 || row.noise_level == 20 || row.noise_level == 20) &&
  row.noise_type == "Uniform" &&
  (row.data_length == 250 || row.data_length == 250 )&&
  row.change_point_count == 3,
  df
 )
 
-
+=#
 
 df = filter(row -> !isnan(row.precision), df)
-df = filter(row -> row.noise_type == "Uniform", df)
+#df = filter(row -> row.noise_type == "Uniform", df)
 
 
 

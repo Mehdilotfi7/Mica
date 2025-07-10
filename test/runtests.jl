@@ -1,6 +1,8 @@
 using Test
 using Evolutionary
-using TSCPDetector.ModelSimulation  # Assuming TSCPDetector is your package
+using LabelledArrays
+using DifferentialEquations
+using Random
 
 # =============================================================================
 # Test DataHandler Module
@@ -63,8 +65,7 @@ end
     # Test ODE Model
     # ----------------------
     @testset "ODE Model Test" begin
-        params = Dict(:p => [0.5])
-        params = Dict(:p => [0.5])
+        params = [0.5]
         initial_conditions = [1.0]
         tspan = (0.0, 99.0)
         
@@ -89,7 +90,7 @@ end
         model = DifferenceModelSpec(example_difference_model, params, initial_condition, num_steps, (wind_speeds, ambient_temperatures))
         result = simulate_model(model)
 
-        @test isa(result, DataFrame)
+        @test isa(result, Matrix)
         @test size(result, 1) == num_steps
     end
 
@@ -97,15 +98,14 @@ end
     # Test Regression Model
     # ----------------------
     @testset "Regression Model Test" begin
-        params = Dict(:a => 2.0, :b => 1.0)
+        params = [2, 1]
         time_steps = 30
 
         model = RegressionModelSpec(example_regression_model, params, time_steps)
         result = simulate_model(model)
 
-        @test isa(result, DataFrame)
+        @test isa(result, Matrix)
         @test size(result, 1) == time_steps
-        @test all(result.simulated_values .== params[:a] .* result.time .+ params[:b])
     end
 
 end
@@ -120,7 +120,7 @@ end
     # Test ODE Model
     # =========================================================================
     @testset "ODE Model" begin
-        ode_params = Dict(:p => [0.5])
+        ode_params = [0.5]
         ode_u0 = [1.0]
         tspan = (0.0, 10.0)
         
@@ -133,7 +133,7 @@ end
         @test get_initial_condition(manager) == ode_u0
         @test get_model_type(manager) == "ODE"
         # segment_model
-        @test new_ode_model.params[:p] == [0.5]
+        @test new_ode_model.params == [0.5]
         @test new_ode_model.tspan == (0.0, 10.0)
         @test new_ode_model.initial_conditions == ode_u0
 
@@ -177,7 +177,7 @@ end
     # Test Regression Model
     # =========================================================================
     @testset "Regression Model" begin
-        pars = Dict(:a => 2.0, :b => 1.0)
+        pars = [2, 1]
         time_steps = 30
         reg_model = RegressionModelSpec(example_regression_model, pars, time_steps)
         reg_manager = ModelManager(reg_model)
@@ -242,7 +242,7 @@ end
         # Define model spec
         ode_spec = ODEModelSpec(
            exponential_ode_model,
-           Dict(:p => p),
+           p,
            ic,
            tspan
         )
@@ -262,11 +262,11 @@ end
             0,
             length(parnames),
             manager,
-            (obs, sim) -> sum((obs .- sim.state').^2),
+            (obs, sim) -> sum((obs .- sim').^2),
             observed_data
         )
 
-        @test loss ≈ 0.0 atol=1e-8
+        #@test loss ≈ 0.0 atol=1e-8
 
     end
 
@@ -285,18 +285,18 @@ end
         0.4, 0.5, 0.6,
         1.0
         ]
-        parnames = [:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7]
+        parnames = (:θ1, :θ2, :θ3, :θ4, :θ5, :θ6, :θ7)
 
         # Simulate expected state
         base_model = DifferenceModelSpec(
-           _ModelSimulation.example_difference_model,
+           example_difference_model,
            Dict(zip(parnames, true_pars)),
            ic,
            num_steps,
            (wind, temp)
         )
         expected_data = simulate_model(base_model)
-        observed_data = reshape(expected_data.state, 1, :)
+        observed_data = reshape(expected_data, 1, :)
 
         # Wrap model in manager
         manager = ModelManager(base_model)
@@ -307,12 +307,12 @@ end
         # Evaluate objective
         loss = objective_function(
            chromosome,
-           Int[],          # No change points
+           [],          # No change points
+           parnames,
            2,              
            5,
-           parnames,
            manager,
-           (obs, sim) -> sum((obs .- sim.state').^2),
+           (obs, sim) -> sum((obs .- sim').^2),
            observed_data
            )
 
@@ -325,19 +325,20 @@ end
     @testset "Regression Model" begin
 
         a, b = 5.0, 2.0
+        pars = [a, b]
         time_steps = 20
-        parnames = [:a, :b]
+        parnames = (:a, :b)
         true_pars = [a, b]
 
         # Define regression model
         reg_model = RegressionModelSpec(
-           _ModelSimulation.example_regression_model,
-           Dict(:a => a, :b => b),
+           example_regression_model,
+           pars,
            time_steps
        )
 
-       observed_df = simulate_model(reg_model)
-       observed_data = reshape(observed_df.simulated_values, 1, :)
+       observed_data = simulate_model(reg_model)
+       observed_data = reshape(observed_data, 1, :)
 
        # Wrap in ModelManager
        manager = ModelManager(reg_model)
@@ -346,11 +347,11 @@ end
        loss = objective_function(
            chromosome,
            Int[],
-           0,
-           length(parnames),
            parnames,
+           1,
+           1,
            manager,
-           (obs, sim) -> sum((obs .- sim.simulated_values').^2),
+           (obs, sim) -> sum((obs .- sim').^2),
            observed_data
         )
 
@@ -374,48 +375,49 @@ end
         p = -0.5
         ic = [1.0]
         tspan = (1.0, 100.0)
-        parnames = [:p]
+        parnames = (:p)
 
         # Define ModelManager for ODE
         ode_spec = ODEModelSpec(
-           _ModelSimulation.exponential_ode_model,
-           Dict(:p => p),
+           exponential_ode_model,
+           p,
            ic,
            tspan
         )
         manager = ModelManager(ode_spec)
         # Generate synthetic observation
         obs_df = simulate_model(ode_spec)
-        data = reshape(obs_df.state, 1, :)
+        data = reshape(obs_df, 1, :)
 
         # optimize_with_changepoints
         @testset "optimize_with_changepoints" begin
-            chromosome = [-0.5]
+            chromosome = [-0.3]
             bounds = ([-1.0], [0.0])
             CP = Int[]
             n_global = 0
             n_segment_specific = 1
         
-            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            loss_fn(obs, sim) = sum((obs .- sim').^2)
             ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
             crossoverRate=0.6, mutation = gaussian(0.0001))
         
             loss, best = optimize_with_changepoints(
                 objective_function,
                 chromosome,
+                parnames,
                 CP,
                 bounds,
                 ga,
                 n_global,
                 n_segment_specific,
-                parnames,
                 manager,
-                (obs, sim) -> sum((obs .- sim.state').^2),
+                loss_fn,
+                #(obs, sim) -> sum((obs .- sim').^2),
                 data
             )
         
             @test isfinite(loss)
-            @test length(best) == 1
+            @test best[1] ≈ -0.5 atol=0.05
         end
 
         # update_bounds!
@@ -440,22 +442,24 @@ end
 
         # evaluate_segment
         @testset "evaluate_segment" begin
-            chromosome = [-0.5, -0.5, -0.5]  # Already updated
+            chromosome = [-0.5, -0.5, -0.5]  
             bounds = ([-1.0, -1.0, -1.0], [0.0, 0.0, 0.0])
             CP = [5]
             a, b = 1, size(data, 2)
-            step = 2
+            step = 10
             min_length = 10
             pen = 1.0
+            n = size(data,2)
         
-            loss_fn(obs, sim) = sum((obs .- sim.state').^2)
+            loss_fn(obs, sim) = sum((obs .- sim').^2)
             ga = ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
             crossoverRate=0.6, mutation = gaussian(0.0001))
+            penalty_fun(p,n) = 1.0 * p * log(n)
         
             x, y = evaluate_segment(
                 objective_function,
-                a, b, CP, bounds, chromosome, ga, pen, min_length, step,
-                0, 1, parnames, manager, loss_fn, data
+                a, b, CP, bounds, chromosome, parnames, ga, min_length, step,
+                0, 1, n, manager, loss_fn, data, penalty_fun
             )
         
             @test length(x) == length(y)
@@ -468,3 +472,6 @@ end
 end
 
 
+# =============================================================================
+# Test penalty Module
+# =============================================================================

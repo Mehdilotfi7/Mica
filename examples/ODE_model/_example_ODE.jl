@@ -75,7 +75,7 @@ end
 # Generate synthetic data
 times, data = generate_toy_dataset(β_values, change_points_true, γ, u0, tspan, noise_level, noise)
 data_M = reshape(Float64.(data), 1, :)
-
+using Plots
 plot(data_M[1,:])
 #times, sim = generate_toy_dataset(params[2:end], detected_cp, params[1], u0, tspan)
 #plot!(sim) 

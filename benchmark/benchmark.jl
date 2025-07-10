@@ -174,6 +174,14 @@ penalty_values = [BIC_0, BIC_1, BIC_10, BIC_20, BIC_30, BIC_100]
 change_point_counts = [1, 2, 3]
 data_lengths = [70, 130, 160, 200, 250]
 
+begin
+noise_levels = [0, 100]
+noise_types = ["Uniform"]
+penalty_values = [BIC_0]
+change_point_counts = [1]
+data_lengths = [70]
+end
+
 # Generate all combinations
 combos = [(n, t, p, c, l) for n in noise_levels, t in noise_types, p in penalty_values, c in change_point_counts, l in data_lengths]
 

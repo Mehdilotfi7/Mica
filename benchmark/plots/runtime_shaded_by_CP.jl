@@ -1,7 +1,92 @@
 using DataFrames, CSV, StatsPlots, Statistics
 using CategoricalArrays
 
+
+
+using CSV, DataFrames, CategoricalArrays, StatsPlots, Plots, Statistics
+
+# Load and clean
+df = CSV.read("benchmark/results/benchmark_results_all_configs_sorted_added_cp_pars-columns.csv", DataFrame)
+
+for col in [:precision, :recall, :f1]
+    df[!, col] .= coalesce.(df[!, col], 0.0)
+    df[!, col] .= ifelse.(isnan.(df[!, col]), 0.0, df[!, col])
+end
+
+# --- Optional filter for one noise/penalty type ---
+# df = filter(row -> row.noise_type == "Gaussian" && row.penalty == "BIC_10", df)
+
+# Compute mean runtime per (data_length, change_point_count)
+df_summary = combine(groupby(df, [:data_length, :change_point_count]),
+                     :runtime => mean => :mean_runtime)
+
+# Sort by data_length and change_point_count
+sort!(df_summary, [:change_point_count, :data_length])
+df_summary.label = string.("L=", df_summary.data_length)
+
+# Categorical for consistent x-axis
+df_summary.label = categorical(df_summary.label, levels=unique(df_summary.label))
+df_summary.x = 1:nrow(df_summary)
+
+# Group x-positions by CP for region coloring
+cp_to_x = Dict{Int, Vector{Int}}()
+for row in eachrow(df_summary)
+    push!(get!(cp_to_x, row.change_point_count, Int[]), row.x)
+end
+
+# Define colors per change point count
+cp_colors = Dict(
+    1 => :cornflowerblue,
+    2 => :lightsalmon,
+    3 => :mediumseagreen
+)
+
+# Plot runtime line
+plt = @df df_summary plot(:x, :mean_runtime,
+    seriestype = :line,
+    marker = :circle,
+    linewidth = 2,
+    color = :black,
+    xlabel = "Data Length",
+    ylabel = "Mean Runtime (s)",
+    title = "Runtime vs Data Length (shaded by Change Point Count)",
+    legend = false,
+    xtickfont = font(8),
+    titlefont = font(10)
+)
+
+# Get y limits
+ymin, ymax = Plots.ylims(plt)
+
+# Add shaded regions for CP count
+for (cp, xpos) in sort(collect(cp_to_x))
+    x0 = minimum(xpos) - 0.5
+    x1 = maximum(xpos) + 0.5
+    Plots.plot!(plt, [x0, x1, x1, x0], [ymin, ymin, ymax, ymax],
+        seriestype = :shape,
+        fillcolor = get(cp_colors, cp, :lightgray),
+        fillalpha = 0.25,
+        linecolor = :transparent,
+        label = "")
+    annotate!(plt, mean(xpos), ymax - 0.05, Plots.text("CP=$(cp)", :black, 8, :center))
+end
+
+# Add custom x-ticks: use data_length values
+xticks = (df_summary.x, string.(df_summary.data_length))
+plot!(plt, xticks = xticks, rotation = 60)
+
+# Save
+savefig(plt, "benchmark/plots/runtime_vs_data_length_shaded_by_cp.pdf")
+display(plt)
+
+
+
+
+#######################################################################
 df = CSV.read("benchmark/results/benchmark_results_all_configs.csv", DataFrame)
+
+df = CSV.read("benchmark/results/benchmark_results_all_configs_sorted_added_cp_pars-columns.csv", DataFrame)
+
 
 df_clean = filter(row -> !isnan(row.precision) && !isnan(row.recall), df)
 

@@ -58,6 +58,45 @@ struct RegressionModelSpec <: AbstractModelSpec
     time_steps::Int
 end
 
+"""
+    ARIMAModelSpec <: AbstractModelSpec
+
+A specification type for defining ARIMA model behavior in the Mocha changepoint detection framework.
+
+# Fields
+- `model_function::Function`: A function that simulates the ARIMA model given parameters, time span, and optional inputs. Typically returns a time series array of shape `(1, T)` where `T` is the number of time steps.
+- `params::Vector`: The initial parameter vector, containing:
+    - `μ` (drift term),
+    - `p` AR coefficients (segment-specific),
+    - `q` MA coefficients (segment-specific).
+- `time_steps::Int`: The total number of time points over which the model is simulated.
+- `p::Int`: The number of autoregressive (AR) terms.
+- `d::Int`: The order of differencing (integration).
+- `q::Int`: The number of moving average (MA) terms.
+
+# Usage
+Used as input to `ModelManager` for segment-based simulation and parameter estimation via Mocha's genetic algorithm-based changepoint detection pipeline.
+
+# Example
+```julia
+spec = ARIMAModelSpec(
+    simulate_model,     # ARIMA simulation function
+    [0.1, 0.2, -0.1, 0.05],  # μ, AR, MA coefficients
+    200,                # simulate over 200 time steps
+    1,                  # AR order p
+    1,                  # differencing d
+    1                   # MA order q
+)
+"""
+
+struct ARIMAModelSpec <: AbstractModelSpec
+    model_function::Function
+    params::Vector
+    time_steps::Int
+    p::Int
+    d::Int
+    q::Int
+end
 # =============================================================================
 # Model Simulation Functions
 # =============================================================================
@@ -118,12 +157,12 @@ Defines the dynamics `du/dt = -p * u`.
 # Returns
 - `Matrix`: state variable evolution.
 """
-function exponential_ode_model(params, tspan, u0)
+function exponential_ode_model(p, tspan, u0)
     function ode!(du, u, p, t)
-        du[1] = -params.p * u[1]
+        du[1] = -p[1] * u[1]
     end
 
-    prob = ODEProblem(ode!, u0, tspan, params[:p])
+    prob = ODEProblem(ode!, u0, tspan, p)
     sol = solve(prob, Tsit5(), saveat=1.0)
 
     return sol[:,:]
@@ -176,9 +215,9 @@ Simulates a linear trend `y = a * t + b`.
 """
 function example_regression_model(params, time_steps::Int)
     time = 1:time_steps
-    simulated_values = params[:a] .* time .+ params[:b]
+    simulated_values = params[1] .* time .+ params[2]
 
-    return DataFrame(time=time, simulated_values=simulated_values)
+    return simulated_values[:,:]
 end
 
 #end # module
