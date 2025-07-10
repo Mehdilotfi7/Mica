@@ -3,6 +3,7 @@ using Evolutionary
 using LabelledArrays
 using DifferentialEquations
 using Random
+using TSCPDetector
 
 # =============================================================================
 # Test DataHandler Module
