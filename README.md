@@ -21,7 +21,7 @@
 
 ---
 
-## 🔍 Overview
+## Overview
 
 **TSCPDetector.jl** is a Julia package for simulating time-dependent models (ODEs, difference equations) and detecting **change points** in their dynamics using evolutionary optimization.
 
@@ -31,11 +31,11 @@ Supports:
 - Automatic model management and loss evaluation
 - BIC/AIC-style regularization
 
-👉 **[📘 Full Documentation](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)**
+ **[📘 Full Documentation](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)**
 
 ---
 
-## ⚡ Installation
+## Installation
 
 ```julia
 using Pkg
