@@ -20,7 +20,7 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
         with:
-          version: "1.10"
+          version: "1.11"
 
       - name: Cache Julia artifacts
         uses: actions/cache@v3
