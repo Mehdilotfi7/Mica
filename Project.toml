@@ -7,13 +7,11 @@ version = "1.0.0"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Evolutionary = "86b6b26d-c046-49b6-aa0b-5f0f74682bd6"
 LabelledArrays = "2ee39098-c373-598a-b85f-a56591580800"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-DifferentialEquations = "7.16.1"
-Evolutionary = "0.11.1"
-LabelledArrays = "1.16.1"
+DifferentialEquations = "7.16"
+Evolutionary = "0.11"
+LabelledArrays = "1.16"
 julia = "1.6"
 
 [extras]

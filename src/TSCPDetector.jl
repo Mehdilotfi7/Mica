@@ -4,6 +4,7 @@ module TSCPDetector
 using Evolutionary
 using DifferentialEquations
 using LabelledArrays
+using Random
 
 # ========== Internal Modules ==========
 include("ModelSimulation.jl")
