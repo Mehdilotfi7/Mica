@@ -14,21 +14,22 @@ include("penalty.jl")
 
 # ========== Exported API ==========
 
-# -- Model Specifications --
+# -- Model Simulation --
 export AbstractModelSpec, ODEModelSpec, DifferenceModelSpec, RegressionModelSpec
 export simulate_model, exponential_ode_model
 export example_difference_model, example_regression_model
 
 # -- Model Handling --
-export ModelManager, get_initial_condition, get_model_type, update_bounds!
-export extract_parameters
+export ModelManager, get_initial_condition, update_initial_condition, segment_model, get_model_type
 
-# -- Objective Function & Penalties --
+# -- Objective Function --
+export extract_parameters
 export objective_function, wrapped_obj_function
-export custom_penalty, call_penalty_fn, method_argnames
-export default_penalty, BIC_penalty, relative_length_penalty
 
 # -- Change Point Detection --
-export segment_model, evaluate_segment, detect_changepoints
+export optimize_with_changepoints, update_bounds!, evaluate_segment, detect_changepoints
+
+# -- Penalties --
+export call_penalty_fn, method_argnames, default_penalty, BIC_penalty
 
 end # module TSCPDetector
