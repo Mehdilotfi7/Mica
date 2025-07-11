@@ -12,9 +12,6 @@ using TSCPDetector
 # For now this functionality is not available 
 #=
 
-using Test
-using DataFrames
-using YourPackageName.DataHandler  # Replace with your actual module path
 
 @testset "DataHandler Module Tests" begin
 
