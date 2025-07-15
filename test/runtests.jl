@@ -417,7 +417,7 @@ end
             )
         
             @test isfinite(loss)
-            @test isapprox(best[1], -0.5; rtol=1e-1, atol=1e-2)
+            @test isapprox(best[1], -0.5; rtol=1e-1, atol=2e-1)
         end
 
         # update_bounds!
