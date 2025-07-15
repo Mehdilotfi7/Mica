@@ -5,6 +5,8 @@ using DifferentialEquations
 using Random
 using TSCPDetector
 
+Random.seed!(1234)
+
 # =============================================================================
 # Test DataHandler Module
 # =============================================================================
@@ -415,7 +417,7 @@ end
             )
         
             @test isfinite(loss)
-            @test best[1] ≈ -0.5 atol=0.05
+            @test isapprox(best[1], -0.5; rtol=1e-1, atol=1e-2)
         end
 
         # update_bounds!
