@@ -10,5 +10,5 @@ Pages = ["reference.md"]
 ```
 
 ```@autodocs
-Modules = [TSCPDetector]
+Modules = [Mocha]
 ```

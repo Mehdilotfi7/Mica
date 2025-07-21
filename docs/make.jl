@@ -1,23 +1,23 @@
 using Pkg
 
-# Activate the docs environment and ensure TSCPDetector is available
+# Activate the docs environment and ensure Mocha is available
 Pkg.activate(@__DIR__)
 #Pkg.develop(PackageSpec(path = joinpath(@__DIR__, "..")))
 Pkg.instantiate()
 
-using TSCPDetector
+using Mocha
 using Documenter
 
 makedocs(;
-  modules = [TSCPDetector],
+  modules = [Mocha],
   doctest = true,
   linkcheck = false,
   authors = "Mehdi Lotfi <Mehdilotfi.tabrizu@gmail.com>",
-  repo = "https://github.com/Mehdilotfi7/TSCPDetector.jl/blob/{commit}{path}#{line}",
-  sitename = "TSCPDetector.jl",
+  repo = "https://github.com/Mehdilotfi7/Mocha.jl/blob/{commit}{path}#{line}",
+  sitename = "Mocha.jl",
   format = Documenter.HTML(;
     prettyurls = false,
-    canonical = "https://Mehdilotfi7.github.io/TSCPDetector.jl",
+    canonical = "https://Mehdilotfi7.github.io/Mocha.jl",
     assets = ["assets/style.css"],
   ),
   pages = [
@@ -33,7 +33,7 @@ makedocs(;
 )
 
 deploydocs(
-  repo = "github.com/Mehdilotfi7/TSCPDetector",
+  repo = "github.com/Mehdilotfi7/Mocha",
   devbranch = "main",
   push_preview = false,
   versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]

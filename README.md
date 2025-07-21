@@ -1,4 +1,4 @@
-# TSCPDetector.jl
+# Mocha.jl
 
 <p align="center">
 <img src="images/mocha2.png" width="200" />
@@ -6,24 +6,24 @@
 
 <p align="center">
 
-   ![Build Status](https://travis-ci.org/Mehdilotfi7/TSCPDetector.svg?branch=main)
-   [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
-   [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/dev/)
-   [![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
+   ![Build Status](https://travis-ci.org/Mehdilotfi7/Mocha.svg?branch=main)
+   [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/Mocha.jl/stable/)
+   [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/Mocha.jl/dev/)
+   [![Coverage](https://codecov.io/gh/Mehdilotfi7/Mocha.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/Mocha.jl)
 
 </p>
 
 <p align="center">
-![Build Status](https://travis-ci.org/Mehdilotfi7/TSCPDetector.svg?branch=main)
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)
-[![Coverage](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/TSCPDetector.jl)
+![Build Status](https://travis-ci.org/Mehdilotfi7/Mocha.svg?branch=main)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/Mocha.jl/stable/)
+[![Coverage](https://codecov.io/gh/Mehdilotfi7/Mocha.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/Mocha.jl)
 </p>
 
 ---
 
 ## Overview
 
-**TSCPDetector.jl** is a Julia package for simulating time-dependent models (ODEs, difference equations) and detecting **change points** in their dynamics using evolutionary optimization.
+**Mocha.jl** is a Julia package for simulating time-dependent models (ODEs, difference equations) and detecting **change points** in their dynamics using evolutionary optimization.
 
 Supports:
 - Differential and difference equation models
@@ -31,7 +31,7 @@ Supports:
 - Automatic model management and loss evaluation
 - BIC/AIC-style regularization
 
- **[📘 Full Documentation](https://Mehdilotfi7.github.io/TSCPDetector.jl/stable/)**
+ **[📘 Full Documentation](https://Mehdilotfi7.github.io/Mocha.jl/stable/)**
 
 ---
 
@@ -39,7 +39,7 @@ Supports:
 
 ```julia
 using Pkg
-Pkg.add("TSCPDetector")
+Pkg.add("Mocha")
 ```
 ## Package_development
 This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2024. It is currently being maintained and extended by Mehdi Lotfi.

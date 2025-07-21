@@ -39,9 +39,9 @@ jobs:
         run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using TSCPDetector
-            DocMeta.setdocmeta!(TSCPDetector, :DocTestSetup, :(using TSCPDetector); recursive=true)
-            doctest(TSCPDetector)'
+            using Mocha
+            DocMeta.setdocmeta!(Mocha, :DocTestSetup, :(using Mocha); recursive=true)
+            doctest(Mocha)'
 
       - name: Build and deploy documentation
         env:

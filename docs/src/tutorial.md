@@ -110,7 +110,7 @@ The GA minimizes the sum of squared errors + penalty:
 \sum_{k}\sum_{j}\sum_{i}(Data - Simulation)^2
 ```
 
-Updating chromosome bound and length is done by [`TSCPDetector.update_bounds!`](@ref) function.
+Updating chromosome bound and length is done by [`Mocha.update_bounds!`](@ref) function.
 
 ---
 

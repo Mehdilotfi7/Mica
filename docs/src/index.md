@@ -1,6 +1,6 @@
 # Mocha.jl – Model-Based Changepoint Analysis
 
-![TSCPDetector.jl](fig/mocha3.png)
+![Mocha.jl](fig/mocha3.png)
 
 Welcome to the documentation for **Mocha.jl**.
 

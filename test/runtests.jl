@@ -3,7 +3,7 @@ using Evolutionary
 using LabelledArrays
 using DifferentialEquations
 using Random
-using TSCPDetector
+using Mocha
 
 Random.seed!(1234)
 

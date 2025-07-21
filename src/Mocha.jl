@@ -33,4 +33,4 @@ export optimize_with_changepoints, update_bounds!, evaluate_segment, detect_chan
 # -- Penalties --
 export call_penalty_fn, method_argnames, default_penalty, BIC_penalty
 
-end # module TSCPDetector
+end # module Mocha
