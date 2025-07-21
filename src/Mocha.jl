@@ -1,4 +1,4 @@
-module TSCPDetector
+module Mocha
 
 # ========== Dependencies ==========
 using Evolutionary

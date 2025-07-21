@@ -249,6 +249,26 @@ more also it is fast. i think the proble is with benchmarking
 - run benchmarking for different penalty type and BIC_10,20,30,...,100?
 
 
+11.07.2025
+
+- the current problem is CI file. it does not correctly test the different version of julia in github workflow
+- git hub does not run and deploy the CI and Docs, it needs to pay
+  - move to gitlab
+  - or simply pay
+- optimize CI and Docs files for actions 
+- run wind Turbine Modeling
+- read paper and supp material
+- ARIMA model for ECG
+
+
+
+15.07.2025
+
+
+- run wind Turbine Modeling
+- read paper and supp material
+- ARIMA model for ECG
+
 ___________________________________________________________________________________________________________________________________________________
 ___________________________________________________________________________________________________________________________________________________
 
