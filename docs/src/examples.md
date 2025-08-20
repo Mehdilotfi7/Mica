@@ -278,7 +278,7 @@ step = 10
 ga = GA(populationSize = 100, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
         crossoverRate=0.7, mutation = gaussian(0.0001))
 n = size(data_CP,2)
-my_penalty4(p, n) = 10.0 * p * log(n)
+my_penalty(p, n) = 40.0 * p * log(n)
 
 detected_cp, params = detect_changepoints(
     objective_function,
@@ -292,13 +292,61 @@ detected_cp, params = detect_changepoints(
 
 ```
 
-![Second Example](fig/covid_ex_docs.png)
+![Second Example](fig/covsim_relative_pars_Previous_Segment_pen40.png)
 
 ---
 
 ## Example 3: Wind Turbine Performance using DE
 
- Coming soon...
+This example demonstrates how **Mocha** can be used to detect abrupt behavioral shifts in wind turbine operation, using SCADA data and a physics-informed thermal model.
+
+### Dataset
+
+We used the **Kelmarsh Wind Farm SCADA dataset**, provided by Cubico Sustainable Investments Ltd. under a CC-BY-4.0 license. It includes 10-minute resolution measurements from six **Senvion MM92** turbines between 2016 and 2021. For this example, we selected **Turbine 1** and analyzed an 18-day window: **January 1–18, 2021**.
+
+The dataset includes:
+- Generator temperature  
+- Wind speed  
+- Ambient temperature  
+- Status logs (e.g., start-ups, shutdowns, external stops)
+
+### Model
+
+We apply Mocha to a **first-principles thermal model** of the generator (adapted from Zhang et al., 2020), which relates generator temperature to wind speed and ambient temperature through thermal resistance and loss dynamics. The model simulates how heat is generated and dissipated during turbine operation.
+
+Segment-specific parameters (`θ₁–θ₄`) represent thermal resistance and cooling dynamics, while non-segment-specific parameters (e.g., copper losses) remain constant across time.
+
+### Change Point Detection
+
+Mocha detects change points by monitoring structural shifts in the estimated model parameters. The optimization uses a custom objective function based on simulation accuracy, evaluated by comparing model-predicted temperatures with observed SCADA signals.
+
+Each change point marks a period of altered thermal behavior, potentially corresponding to:
+
+- Start-up sequences (e.g., gearbox warm-up, mains run-up)  
+- External stops due to low wind or icing  
+- Unreported anomalies in thermal response  
+
+Detected change points are automatically aligned with turbine status logs for validation. A detailed alignment table is included in the Supplementary Material.
+
+### Results
+
+The figure below shows:
+- **Top subplot**: Observed vs. simulated generator temperature with change points (green lines)
+- **Bottom subplot**: Relative parameter changes (`θ₁–θ₄`) across segments, reflecting how cooling efficiency evolves over time.
+
+These parameter shifts provide physical insight into when and how the generator's thermal behavior adapts to operational changes or potential degradation.
+
+We begin by defining the difference equations required for Mocha:
+
+```julia
+
+
+```
+
+Next, we call the changepoint detection function provided by the package to identify both the changepoints and the associated model parameters. The results are shown below:
+
+
+ ![Third Example](fig/Turbine_relative_pars_Previous_Segment.png)
 
 ## Example 4: ECG Signal Analysis using ARIMA
 
