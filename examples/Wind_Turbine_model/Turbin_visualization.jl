@@ -35,14 +35,14 @@ param4 = params[7:4:end]
 
 data = [param1 param2 param3 param4]'  
 data_rel = data ./ data[:, 1]
-data_rel = hcat(ones(size(data, 1)), data[:, 2:end] ./ data[:, 1:end-1])
+#data_rel = hcat(ones(size(data, 1)), data[:, 2:end] ./ data[:, 1:end-1])
 
 
 # We need 5 y-edges for 4 parameters (just space them uniformly)
 yedges = 0:1:4  # 5 edges for 4 rows
 
 
-
+pyplot()
 heatmaps = []
 
 for i in 1:size(data_rel, 1)
@@ -83,7 +83,7 @@ for i in 1:size(data_rel, 1)
     push!(heatmaps, hm)
 end
 
-p3 = plot(heatmaps..., layout = @layout([a;b;c;d]), size = (950, 950))
+p3 = plot(heatmaps..., layout = @layout([a;b;c;d]), size = (1200, 500))
 p4 = plot(p2, p3, layout=(2, 1), margin = 8Plots.mm,dpi=100,
 size=(1400, 1200), guidefont=font(12), legendfont=font(10), titlefont=font(10),tickfont=font(10)
 )
