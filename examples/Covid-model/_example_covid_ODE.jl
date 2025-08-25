@@ -95,7 +95,7 @@ function example_ode_model(params, tspan::Tuple{Float64, Float64}, u0)
     prob = ODEProblem(CovModel!, u0, tspan, params)
     sol = solve(prob, Tsit5(), saveat=1.0 , abstol = 1.0e-6, reltol = 1.0e-6,
                 isoutofdomain = (u,p,t)->any(x->x<0,u))
-    return sol  # returns matrix-like solution
+    return sol[:,:]  # returns matrix-like solution
 end
 
 using SciMLBase
@@ -194,6 +194,7 @@ end
 plot(death_CP)
 
 ##############
+begin
 # Put all datasets into an array
 data_CP = [cases_CP, hospital_CP, icu_CP, death_CP, vacc_CP]
 #length(data_CP[1])
@@ -212,7 +213,7 @@ data_CP = reduce(hcat, data_CP)
 data_CP = data_CP'
 data_CP = Matrix(data_CP)
 
-
+end
 p = scatter(data_CP[1,:])
 #savefig(p,"p.png")
 
@@ -454,7 +455,7 @@ xtick_labels = string.(segment_labels)
 segment_edges = segment_labels
 segment_indices = 1:length(segment_labels_str)
 
-
+cps = ["2020-01-27", "cp1", "cp2", "cp3", "cp4", "cp5", "cp6", "cp7", "cp8", "cp9", "cp10", "cp11","2021-03-02"]
 # 4 parameters × 12 segments
 
 param_labels = ["p₁ \n(Detection rate)", "β \n(Infection rate)", "p₁₂ \n(Hospitalization rate)", 
@@ -501,7 +502,8 @@ for i in 1:size(data_rel, 1)
         xlabel = show_xticks ? "Change Points" : "",
         ylabel = "",
         yticks = ([0.5], [param_labels[i]]),
-        xticks = show_xticks ? (segment_edges, segment_edges) : false,  # ← Hides xticks if not last
+        #xticks = show_xticks ? (segment_edges, segment_edges) : false,  
+        xticks = show_xticks ? (segment_edges, cps) : false,  
         #xticks=false,
         #xtickfontrotation = show_xticks ? 30 : 0,
         xrotation = show_xticks ? 30 : 0,
@@ -530,11 +532,11 @@ for i in 1:size(data_rel, 1)
 end
 
 # Combine plots
-p2 = plot(heatmaps..., layout = @layout([a;b;c;d;e;f;g]), size = (900, 400))
+p2 = plot(heatmaps..., layout = @layout([a;b;c;d;e;f;g]), size = (900, 900))
 p4 = plot(p,p2, layout = (2,1))
 layout = @layout [a{0.6h} ;b{0.4h}]  # 30% height for p, 70% for p2
 p4 = plot(p, p2, layout = layout,  size = (900, 900))
-savefig(p2, "relative_pars_Previous_Segment_pen40.pdf")
+savefig(p2, "relative_pars_Previous_Segment_pen40_gr_backend.pdf")
 savefig(p4, "covsim_relative_pars_Previous_Segment_pen40.pdf")
 
 

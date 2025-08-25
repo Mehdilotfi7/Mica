@@ -216,12 +216,12 @@ end
 cps_dates = df[:, "Date and time"][detected_cp]
 
 plot(generator_temperatures, label = "Generator temperatures", size=(1400, 700), margin = 20Plots.mm,
-guidefont=font(10), legendfont=font(10), color = :skyblue, markersize = 1, titlefont=font(10), dpi=1000, xlabel = "Time", ylabel = "Generator temperature"
+guidefont=font(10), legendfont=font(10), color = :skyblue, markersize = 1, titlefont=font(10), dpi=1000, xlabel = "Time", ylabel = "Generator temperature",
 )
 
 plot_function(params, detected_cp)
 vline!(detected_cp, label="Found CPs")
-p2 = xticks!(vcat(detected_cp, [0, 1300]), vcat(cps_dates, ["2021-01-01 00:00:00", "2021-01-18 08:30:00"]), rotation=40, tickfont=font(7))
+p2 = xticks!(vcat(detected_cp, [0, 2500]), vcat(cps_dates, ["2021-01-01 00:00:00", "2021-01-18 08:30:00"]), rotation=30, tickfont=font(7))
 
 savefig("Turbine_CPD_2sub.png")
 plot(p1, p2, layout=(2, 1), margin = 8Plots.mm,dpi=100,

@@ -1,4 +1,4 @@
-# module _ChangePointDetection
+# module ChangePointDetection
 
 """
 # ChangePointDetection Module

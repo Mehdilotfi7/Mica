@@ -502,7 +502,7 @@ for (i, cps) in enumerate(iter_cps)
 end
 
 p_mocha = plot(plots..., layout=(4,1), size=(900,800))
-savefig(p_mocha, "p_mocha.png")
+savefig(p_mocha, "p_mocha.pdf")
 
 
 
@@ -534,7 +534,7 @@ end
 plot!(t, y, color="black", lw=1.5, label="Data")
 p_cp_AllOncee = vline!(true_cps, color="red", lw=2, ls=:dash, label ="Change Points")
 
-savefig(p_cp_AllOncee, "p_cp_AllOncee.png")
+savefig(p_cp_AllOncee, "p_cp_AllOncee.pdf")
 
 signal = plot(t, y, color="black", lw=1.5, framestyle=:none, label = "Data", xticks=false, yticks=false, size=(900,200))
-savefig(signal, "signal.png")
+savefig(signal, "signal.pdf")
