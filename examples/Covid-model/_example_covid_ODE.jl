@@ -57,7 +57,7 @@ function CovModel!(du, u, p, t)
   ᴺβᴺSI = ᴺβ * δₜ * ᴺS * (ᴺE₁ + ᴺI₀ + ᴺI₁)
 
   # ODEs
-  du[1]  = -(ᴺβᴺSI)/N + ω * ᴺR - ν * ᴺS + ω * V                          # Susceptible
+  du[1]  = -(ᴺβᴺSI)/N + ω * ᴺR - ν * ᴺS                           # Susceptible
   du[2]  =  (ᴺβᴺSI/N) - (ᴺε₀ * ᴺE₀)                                      # E0
   du[3]  =  (ᴺε₀ * ᴺE₀) - (ᴺε₁ * ᴺE₁)                                    # E1
   du[4]  =  ((1 - ᴺp₁) * ᴺε₁ * ᴺE₁) - (ᴺγ₀ * ᴺI₀)                        # I0
@@ -70,7 +70,7 @@ function CovModel!(du, u, p, t)
             (1 - ᴺp₃D) * ᴺγ₃ * ᴺI₃ - ω * ᴺR + ν * ᴺS                      # Recovered
   du[9]  =  (ᴺp₁D * ᴺγ₁ * ᴺI₁) + (ᴺp₂D * ᴺγ₂ * ᴺI₂) + (ᴺp₃D * ᴺγ₃ * ᴺI₃)   # Cumulative Deaths
   du[10] =  ᴺp₁ * ᴺε₁ * ᴺE₁                                               # Cumulative Cases
-  du[11] =  ν * ᴺS - ω * V                                                # Cumulative Vaccinated
+  du[11] =  ν * ᴺS                                               # Cumulative Vaccinated
 end
 
 
@@ -238,7 +238,7 @@ n_global = 8
 n_segment_specific = 8
 min_length = 10
 step = 10
-ga = GA(populationSize = 100, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
+ga = GA(populationSize = 150, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
 crossoverRate=0.7, mutation = gaussian(0.0001))
 n = size(data_CP,2)
 BIC_0(p, n) = 0.0 * p * log(n)
