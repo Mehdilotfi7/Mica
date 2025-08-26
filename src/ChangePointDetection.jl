@@ -139,13 +139,14 @@ function detect_changepoints(
     n::Int, n_global::Int, n_segment_specific::Int,
     model_manager::ModelManager,
     loss_function::Function,
-    data::Matrix{Float64},
+    data::Matrix{Float64}, 
     initial_chromosome::Vector{Float64},
     parnames,
     bounds::Tuple{Vector{Float64}, Vector{Float64}},
     ga, # i should define type later
     min_length::Int, step::Int,
-    penalty_fn::Function = default_penalty  # Default penalty
+    penalty_fn::Function = default_penalty,  # Default penalty
+    data_indices::Vector{Int} = nothing
 )
     tau = [(0, n)]
     CP = Int[]
@@ -158,7 +159,15 @@ function detect_changepoints(
     )
     @show loss_val
     @show best_params
-    #loss_val = 1000
+    
+    simulate_full_model(best_params, CP, parnames,
+                          n_global, n_segment_specific,
+                          model_manager, data;
+                          plot_results=true,
+                          show_change_points=true,
+                          show_data=true,
+                          data_indices=data_indices)
+
 
     update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
 
@@ -170,7 +179,7 @@ function detect_changepoints(
             model_manager, loss_function, data,
             penalty_fn
         )
-        # Inspiring fro m changepoints.jl package 
+        # Inspiring from changepoints.jl package 
         if !isempty(x)
             minval, idx = findmin(x)
             if minval < loss_val
@@ -181,6 +190,15 @@ function detect_changepoints(
                 best_params = y[idx]
                 @show CP
                 @show best_params
+
+                simulate_full_model(best_params, CP, parnames,
+                          n_global, n_segment_specific,
+                          model_manager, data;
+                          plot_results=true,
+                          show_change_points=true,
+                          show_data=true,
+                          data_indices=data_indices)
+
                 update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
                 if chpt != a + min_length
                     push!(tau, (a, chpt))

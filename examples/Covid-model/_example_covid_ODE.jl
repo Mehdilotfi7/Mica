@@ -6,6 +6,7 @@ using Statistics
 using Random
 using CSV
 using DataFrames
+using Dates
 
 
 
@@ -102,59 +103,24 @@ using SciMLBase
 
 function loss_function(observed, simulated)
 
-  if SciMLBase.successful_retcode(simulated)
+  #if SciMLBase.successful_retcode(simulated)
     infected =  simulated[5,:]
     hospital =  simulated[6,:]
     icu      =  simulated[7,:]
     death    =  simulated[9,:]
     vacc     =  simulated[11,:] 
 
-    # Convert to daily by differencing
-    #death = vcat(0.0, diff(death_cum))
-    #vacc  = vcat(0.0, diff(vacc_cum))
-
-    #=
-
-    w_1=1/var(log_transform(observed[1,:]))
-    w_2=1/var(log_transform(observed[2,:]))
-    w_3=1/var(log_transform(observed[3,:]))
-    w_4=1/var(log_transform(observed[4,:]))
-    w_5=1/var(log_transform(observed[5,:]))
-
-
-    ϵ = 1e-8  # to avoid division by zero
-    loss =
-        sum(abs2.(infected .- observed[1, :]))  / (mean(observed[1, :])^2 + ϵ) +
-        sum(abs2.(hospital .- observed[2, :]))  / (mean(observed[2, :])^2 + ϵ) +
-        sum(abs2.(icu .- observed[3, :]))      / (mean(observed[3, :])^2 + ϵ) +
-        sum(abs2.(death .- observed[4, :]))    / (mean(observed[4, :])^2 + ϵ) +
-        sum(abs2.(vacc .- observed[5, :]))     / (mean(observed[5, :])^2 + ϵ)
-    
-
-
-  =#
-
     loss =
     sum(abs, log_transform(infected).- log_transform(observed[1,:]))+
     sum(abs, log_transform(hospital).- log_transform(observed[2,:]))+
     sum(abs, log_transform(icu).- log_transform(observed[3,:]))+
     sum(abs, log_transform(death).- log_transform(observed[4,:]))+
-    sum(abs, log_transform(vacc).- log_transform(observed[5,:]))
+    sum(abs, log_transform(vacc).- log_transform(observed[5,:]))    
 
-  
-
-
-    # ToDo: scaled loss to mean or max + big error for bad parameter and solutions 
-
-
-    #@assert size(observed) == size(simulated) "Dimension mismatch in loss function."
-    
-
-    
     return loss
-  else
-    return Inf
-  end
+  #else
+  #  return Inf
+  #end
 end
 
 
@@ -191,7 +157,6 @@ vacc_CP = cumsum(vacc_CP)
 #icu_CP = sum(columns_to_sum, dims=2)[:,1]
 end
 
-plot(death_CP)
 
 ##############
 begin
@@ -214,7 +179,7 @@ data_CP = data_CP'
 data_CP = Matrix(data_CP)
 
 end
-p = scatter(data_CP[1,:])
+#p = scatter(data_CP[1,:])
 #savefig(p,"p.png")
 
 
@@ -246,15 +211,17 @@ BIC_0(p, n) = 0.0 * p * log(n)
 BIC_12(p, n) = 12.0 * p * log(n)
 BIC_40(p, n) = 40.0 * p * log(n)
 BIC_1000(p, n) = 1000.0 * p * log(n)
+
+data_indices = [5, 6, 7, 9, 11]
 end
 @time detected_cp, params = detect_changepoints(
     objective_function,
     n, n_global, n_segment_specific,
     model_manager,
     loss_function,
-    data_CP,
+    data_CP, 
     initial_chromosome, parnames, bounds, ga,
-    min_length, step,BIC_0
+    min_length, step, BIC_0, data_indices
 )
 
 CSV.write("results_detected_cp_penalty0_ts10_pop150_nolog.csv", DataFrame(detected_cp=detected_cp))

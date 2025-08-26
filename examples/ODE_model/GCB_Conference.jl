@@ -538,3 +538,46 @@ savefig(p_cp_AllOncee, "p_cp_AllOncee.pdf")
 
 signal = plot(t, y, color="black", lw=1.5, framestyle=:none, label = "Data", xticks=false, yticks=false, size=(900,200))
 savefig(signal, "signal.pdf")
+
+
+###################
+# stepwise adding CPs to Covid Model
+
+using Evolutionary 
+using DifferentialEquations
+using LabelledArrays
+using Plots
+using Statistics
+using Random
+using CSV
+using DataFrames
+using Dates
+
+include("src/Mocha.jl")
+using .Mocha
+
+
+detected_cp = CSV.read("examples/Covid-model/results_detected_cp_penalty40_ts10_pop150.csv", DataFrame)[:,1] 
+params = CSV.read("examples/Covid-model/results_params_penalty40__ts10_pop150.csv", DataFrame)[:,1] 
+parnames = (:δ, :ᴺε₀, :ᴺε₁, :ᴺγ₀, :ᴺγ₁, :ᴺγ₂, :ᴺγ₃, :ω, :ᴺp₁, :ᴺβ,:ᴺp₁₂, :ᴺp₂₃, :ᴺp₁D, :ᴺp₂D, :ᴺp₃D, :ν) 
+u0 = [83129285-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
+tspan = (0.0, 399.0) 
+ode_spec = ODEModelSpec(example_ode_model, initial_chromosome, u0, tspan) 
+model_manager = ModelManager(ode_spec) 
+n_global = 8 
+n_segment_specific = 8
+
+# Simulate without plotting
+sim = simulate_full_model(params, detected_cp, parnames,
+                          n_global, n_segment_specific,
+                          model_manager, data_CP)
+
+# Simulate and plot all compartments with change points and data overlay
+sim = simulate_full_model(params, detected_cp, parnames,
+                          n_global, n_segment_specific,
+                          model_manager, data_CP;
+                          plot_results=true,
+                          show_change_points=true,
+                          show_data=true,
+                          data_indices=[5, 6, 7, 9, 11])
+

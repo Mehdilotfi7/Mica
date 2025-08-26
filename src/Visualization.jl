@@ -72,7 +72,7 @@ visualize the results.
 ```julia
 
 detected_cp = CSV.read("examples/Covid-mode/results_detected_cp_penalty40_ts10_pop150.csv", DataFrame)[:,1] 
-params = CSV.read("examples/Covid-mode/results_params_penalty40__ts10_pop150.csv", DataFrame)[:,1] 
+params = CSV.read("examples/Covid-model/results_params_penalty40__ts10_pop150.csv", DataFrame)[:,1] 
 parnames = (:δ, :ᴺε₀, :ᴺε₁, :ᴺγ₀, :ᴺγ₁, :ᴺγ₂, :ᴺγ₃, :ω, :ᴺp₁, :ᴺβ,:ᴺp₁₂, :ᴺp₂₃, :ᴺp₁D, :ᴺp₂D, :ᴺp₃D, :ν) 
 u0 = [83129285-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
 tspan = (0.0, 399.0) 
