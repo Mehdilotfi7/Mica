@@ -5,6 +5,9 @@ using Evolutionary
 using DifferentialEquations
 using LabelledArrays
 using Random
+using Plots
+using Dates
+
 
 # ========== Internal Modules ==========
 include("ModelSimulation.jl")
@@ -12,6 +15,7 @@ include("ModelHandling.jl")
 include("ObjectiveFunction.jl")
 include("ChangePointDetection.jl")
 include("penalty.jl")
+include("Visualization.jl")
 
 # ========== Exported API ==========
 
@@ -32,5 +36,8 @@ export optimize_with_changepoints, update_bounds!, evaluate_segment, detect_chan
 
 # -- Penalties --
 export call_penalty_fn, method_argnames, default_penalty, BIC_penalty
+
+# -- Visualization --
+export simulate_full_model, plot_parameter_changes
 
 end # module Mocha

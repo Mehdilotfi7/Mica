@@ -13,7 +13,10 @@ df[:, "Date and time"][1]
 
 segment_dates = df[:, "Date and time"][detected_cp]
 segment_labels = vcat(("2021-01-01 00:00:00"), segment_dates, ("2021-01-18 08:30:00"))
-segment_labels = Date.(segment_labels)
+
+DateTime(segment_labels[1], dateformat"yyyy-mm-dd HH:MM:SS")
+
+segment_indices = DateTime.(segment_labels, dateformat"yyyy-mm-dd HH:MM:SS")
 
 segment_labels_str = string.(segment_labels)
 segment_indices = 1:length(segment_labels_str)
@@ -42,7 +45,8 @@ data_rel = data ./ data[:, 1]
 yedges = 0:1:4  # 5 edges for 4 rows
 
 
-pyplot()
+#pyplot()
+gr()
 heatmaps = []
 
 for i in 1:size(data_rel, 1)
@@ -62,8 +66,8 @@ for i in 1:size(data_rel, 1)
         xlabel = show_xticks ? "Change Points" : "",
         ylabel = "",
         yticks = ([0.5], [param_labels[i]]),
-        xticks = show_xticks ? (segment_indices, segment_labels_str) : false,
-        xrotation = show_xticks ? 40 : 0,
+        xticks = show_xticks ? (segment_indices, segment_indices) : false,
+        xrotation = show_xticks ? 30 : 0,
         c = :blues,
         #clim = (vmin, vmax),
         colorbar = true,
@@ -83,11 +87,13 @@ for i in 1:size(data_rel, 1)
     push!(heatmaps, hm)
 end
 
-p3 = plot(heatmaps..., layout = @layout([a;b;c;d]), size = (1200, 500))
-p4 = plot(p2, p3, layout=(2, 1), margin = 8Plots.mm,dpi=100,
+p3 = plot(heatmaps..., layout = @layout([a;b;c;d]), size = (1200, 300))
+
+layout = @layout [a{0.7h} ;b{0.3h}]
+p4 = plot(p2, p3, layout=layout, margin = 8Plots.mm,dpi=100,
 size=(1400, 1200), guidefont=font(12), legendfont=font(10), titlefont=font(10),tickfont=font(10)
 )
-savefig(p4, "Turbine_relative_pars_Previous_Segment.pdf")
+savefig(p4, "Turbine_relative_pars_Previous_Segment_gr.pdf")
 
 
 layout = @layout [a{0.6h} ;b{0.4h}]  # 30% height for p, 70% for p2
