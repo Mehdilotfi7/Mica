@@ -522,7 +522,7 @@ cps_full = [0; true_cps; 100.0]
 colors = ["#AED6F1", "#F9E79F", "#A9DFBF", "#F5B7B1"]
 
 p_all = plot(; label="Data", title="All Change Points Detected Simultaneously",
-              framestyle=:none, xticks=false, yticks=false, size=(900,200), legendfontsize=7)
+              framestyle=:none, xticks=false, yticks=false, size=(500,300), legendfontsize=7)
 
 ymin, ymax = minimum(y) - 1, maximum(y) + 1
 for (i, (x0, x1)) in enumerate(zip(cps_full[1:end-1], cps_full[2:end]))
@@ -536,10 +536,56 @@ p_cp_AllOncee = vline!(true_cps, color="red", lw=2, ls=:dash, label ="Change Poi
 
 savefig(p_cp_AllOncee, "p_cp_AllOncee.pdf")
 
-signal = plot(t, y, color="black", lw=1.5, framestyle=:none, label = "Data", xticks=false, yticks=false, size=(900,200))
+signal = plot(t, y, color="black", lw=1.5, framestyle=:none, label = "Data", xticks=false, yticks=false, size=(500,300))
 savefig(signal, "signal.pdf")
 
+#####################
+# plotting parameters 
+using Plots
+gr()
 
+# Data
+alpha = [1.0, 4.5, 0.5, 3.5]
+beta  = [1.4, 1.4, 1.4, 1.4]
+segment_edges = 1:5
+colors = ["#AED6F1", "#F9E79F", "#A9DFBF", "#F5B7B1"]
+
+# Create base plot (minimal, tight layout)
+p = plot(legend = false, size = (800, 400),
+         xlabel = "", ylabel = "",
+         xticks = false, yticks = false,
+         framestyle = :box,
+         xlims = (1, 5),
+         ylims = (0, maximum([alpha; beta]) + 0.5))
+
+# Background segment colors
+for i in 1:4
+    plot!([segment_edges[i], segment_edges[i+1]], [0, 0], fillrange = [6, 6],
+          fillcolor = colors[i], fillalpha = 0.4, linealpha = 0, label = false)
+end
+
+# Stepify helper
+function stepify(values)
+    x, y = Float64[], Float64[]
+    for i in 1:length(values)
+        push!(x, segment_edges[i])
+        push!(x, segment_edges[i+1])
+        push!(y, values[i])
+        push!(y, values[i])
+    end
+    return x, y
+end
+
+# Step plots
+xα, yα = stepify(alpha)
+xβ, yβ = stepify(beta)
+
+plot!(xα, yα, lw = 2.5, color = :blue)
+plot!(xβ, yβ, lw = 2.5, linestyle = :dash, color = :black)
+
+display(p)
+
+savefig(pars_shaded, "pars_shaded.pdf")
 ###################
 # stepwise adding CPs to Covid Model
 

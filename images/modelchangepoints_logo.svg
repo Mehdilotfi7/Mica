@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:export-bgcolor="#ffffffff"
-     inkscape:zoom="2.8281532"
-     inkscape:cx="-7183.8401"
-     inkscape:cy="-3475.2361"
+     inkscape:zoom="7.6994993"
+     inkscape:cx="-7276.1874"
+     inkscape:cy="-3333.2687"
      inkscape:window-width="1472"
      inkscape:window-height="920"
      inkscape:window-x="0"
@@ -1305,6 +1305,16 @@
        y2="-3227.2007"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(-20.971388,455.79101)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient46"
+       id="linearGradient286-9-3-3-0-4-5-9-9-2"
+       x1="-6898.7163"
+       y1="-3227.2007"
+       x2="-6582.2046"
+       y2="-3227.2007"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-20.971328,455.79099)" />
   </defs>
   <g
      id="g31"
@@ -2151,5 +2161,57 @@
          x="-7244.7661"
          y="-2941.832"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000">Model-based Change-point Analysis</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.371803;stroke-opacity:0.266667"
+       id="rect1-3-8"
+       width="61.012707"
+       height="50.001644"
+       x="-7326.3101"
+       y="-2905.1306"
+       inkscape:export-filename="mochaa.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <g
+       id="g4-6"
+       transform="matrix(0.32124933,0,0,0.32124933,-4971.8338,-1941.6877)">
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:6;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -7320.1365,-2909.1696 34.3204,-40.5145 6.8211,25.2824 40.3924,-42.169 10.0236,30.8321 35.5255,-46.758 14.5909,20.7996 27.7676,-30.0764"
+         id="path37-8-3-2-5" />
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#197ef2;stroke-width:2.99999;stroke-dasharray:6, 2.99999;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -7264.9721,-2903.9963 -0.2607,-83.5558"
+         id="path10-7-0-21-5-2"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#197ef2;stroke-width:2.99999;stroke-dasharray:6, 2.99999;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -7204.5752,-2903.9859 -0.2607,-83.5558"
+         id="path10-7-0-2-4-2-1"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#ff0000;stroke-width:8.99999;stroke-dasharray:none;stroke-opacity:1"
+         d="m -7323.6004,-2901.6981 58.6972,0.1071"
+         id="path11-64-7-3" />
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#008000;stroke-width:8.99999;stroke-dasharray:none;stroke-opacity:1"
+         d="m -7264.9112,-2901.5965 60.4631,0.017"
+         id="path11-64-3-3-9" />
+      <path
+         style="fill:#000000;fill-opacity:0;stroke:#8f6ed5;stroke-width:8.99999;stroke-dasharray:none;stroke-opacity:1"
+         d="m -7204.457,-2901.5724 59.1787,0.1071"
+         id="path11-64-0-7-7" />
+    </g>
+    <text
+       fill="url(#grad1)"
+       style="font-size:10.1184px;font-family:sans-serif;letter-spacing:0.421599px;text-anchor:middle;fill:url(#linearGradient286-9-3-3-0-4-5-9-9-2);fill-opacity:1;stroke-width:0.421586;stroke-dasharray:none"
+       text-anchor="middle"
+       x="-7295.7622"
+       y="-2859.7219"
+       id="text14-9-3-2-3-6-0-9-7-3"
+       inkscape:export-filename="g31-0.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.1829px;font-family:Palatino;-inkscape-font-specification:'Palatino, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:url(#linearGradient286-9-3-3-0-4-5-9-9-2);fill-opacity:1;stroke:#000000;stroke-width:0.421586;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan32-5-6-6-8-4-7-0-0-7">Mocha.jl</tspan></text>
   </g>
 </svg>
