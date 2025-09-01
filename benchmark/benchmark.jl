@@ -1,12 +1,10 @@
-#using Distributed
 using LabelledArrays
 using DifferentialEquations
 using Statistics
 using Evolutionary 
 using Plots
 using Random
-using JLD2
-using FileIO
+
 
 
 
@@ -160,9 +158,6 @@ function benchmark_one(noise_level, noise_type, penalty, change_point_count, dat
     precision, recall, f1 = calculate_precision(detected_cps, valid_change_points)
     cps_pars = (detected_cps, pars_cps)
 
-    # Save full experiment data to file
-    #filename = "results/run_n$(noise_level)_t$(noise_type)_p$(change_point_count)_l$(data_length).jld2"
-    #@save filename times data detected_cps pars_cps valid_change_points runtime precision recall f1 noise_level noise_type data_length change_point_count penalty
     return (;change_point_count, data_length, noise_level, noise_type, penalty=string(penalty),
         runtime, precision, recall, f1, cps_pars)
 end
