@@ -185,10 +185,13 @@ function simulate_full_model(
         end
 
         display(plt)
-    end
     # --------------------------------------------
 
-    return all_sims
+        return all_sims, plt
+    else
+       return all_sims, nothing
+    end
+
 end
 
 

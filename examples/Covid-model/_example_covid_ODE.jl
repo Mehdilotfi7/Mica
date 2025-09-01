@@ -58,7 +58,7 @@ function CovModel!(du, u, p, t)
   ᴺβᴺSI = ᴺβ * δₜ * ᴺS * (ᴺE₁ + ᴺI₀ + ᴺI₁)
 
   # ODEs
-  du[1]  = -(ᴺβᴺSI)/N + ω * ᴺR - ν * ᴺS + ω * V                          # Susceptible
+  du[1]  = -(ᴺβᴺSI)/N + ω * ᴺR - ν * ᴺS                          # Susceptible
   du[2]  =  (ᴺβᴺSI/N) - (ᴺε₀ * ᴺE₀)                                      # E0
   du[3]  =  (ᴺε₀ * ᴺE₀) - (ᴺε₁ * ᴺE₁)                                    # E1
   du[4]  =  ((1 - ᴺp₁) * ᴺε₁ * ᴺE₁) - (ᴺγ₀ * ᴺI₀)                        # I0
@@ -71,7 +71,7 @@ function CovModel!(du, u, p, t)
             (1 - ᴺp₃D) * ᴺγ₃ * ᴺI₃ - ω * ᴺR + ν * ᴺS                      # Recovered
   du[9]  =  (ᴺp₁D * ᴺγ₁ * ᴺI₁) + (ᴺp₂D * ᴺγ₂ * ᴺI₂) + (ᴺp₃D * ᴺγ₃ * ᴺI₃)   # Cumulative Deaths
   du[10] =  ᴺp₁ * ᴺε₁ * ᴺE₁                                               # Cumulative Cases
-  du[11] =  ν * ᴺS - ω * V                                                # Cumulative Vaccinated
+  du[11] =  ν * ᴺS                                                # Cumulative Vaccinated
 end
 
 
@@ -96,12 +96,22 @@ function example_ode_model(params, tspan::Tuple{Float64, Float64}, u0)
     prob = ODEProblem(CovModel!, u0, tspan, params)
     sol = solve(prob, Tsit5(), saveat=1.0 , abstol = 1.0e-6, reltol = 1.0e-6,
                 isoutofdomain = (u,p,t)->any(x->x<0,u))
-    return sol[:,:]  # returns matrix-like solution
+
+    # return matrix if successful, otherwise NaN filler
+    if SciMLBase.successful_retcode(sol)
+        return sol[:,:]
+    else
+        return fill(NaN, length(u0), Int(tspan[2]-tspan[1])+1)
+    end
 end
 
 using SciMLBase
 
 function loss_function(observed, simulated)
+
+    if any(isnan, simulated)
+       return Inf
+    end
 
   #if SciMLBase.successful_retcode(simulated)
     infected =  simulated[5,:]
@@ -190,7 +200,7 @@ parnames = (:δ, :ᴺε₀, :ᴺε₁, :ᴺγ₀, :ᴺγ₁, :ᴺγ₂, :ᴺγ�
 # propertynames
 #                     δ,   ᴺε₀,   ᴺε₁,   ᴺγ₀, ᴺγ₁,     ᴺγ₂, ᴺγ₃,   ω,      ᴺp₁, ᴺβ,  ᴺp₁₂,  ᴺp₂₃,   ᴺp₁D,  ᴺp₂D,  ᴺp₃D,    ν
 initial_chromosome = [0.1, 1/7, 1/11.4, 1/14, 1/13.4, 1/9,  1/16, 0.0055,  0.2, 0.05, 0.17, 0.144, 0.01,   0.017, 0.173,   0.01]
-lower =              [0.1, 1/10, 1/11.7, 1/24, 1/15.8, 1/19, 1/27, 0.003,   0.0, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001,   0.05]
+lower =              [0.1, 1/10, 1/11.7, 1/24, 1/15.8, 1/19, 1/27, 0.003,   0.0, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001,   10e-5]
 upper =              [0.3, 1/3,  1/11.2, 1/5,  1/10.9, 1/5,  1/8,  0.012,   0.8, 8.0, 0.5,   0.5,   0.5,   0.5,   0.5,     0.1]
 
 
@@ -204,7 +214,7 @@ n_global = 8
 n_segment_specific = 8
 min_length = 10
 step = 10
-ga = GA(populationSize = 100, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
+ga = GA(populationSize = 150, selection = tournament(2), crossover = SBX(0.7, 1), mutationRate=0.7,
 crossoverRate=0.7, mutation = gaussian(0.0001))
 n = size(data_CP,2)
 BIC_0(p, n) = 0.0 * p * log(n)
@@ -224,8 +234,8 @@ end
     min_length, step, BIC_0, data_indices
 )
 
-CSV.write("results_detected_cp_penalty0_ts10_pop150_nolog.csv", DataFrame(detected_cp=detected_cp))
-CSV.write("results_params_penalty0__ts10_pop150_nolog.csv", DataFrame(params=params))
+CSV.write("results_detected_cp_penalty40_ts10_pop150_Visu.csv", DataFrame(detected_cp=detected_cp))
+CSV.write("results_params_penalty40_ts10_pop150_Visu.csv", DataFrame(params=params))
 
 
 CSV.write("results_detected_cp_penalty15.csv", DataFrame(detected_cp=detected_cp))
@@ -470,7 +480,7 @@ for i in 1:size(data_rel, 1)
         ylabel = "",
         yticks = ([0.5], [param_labels[i]]),
         #xticks = show_xticks ? (segment_edges, segment_edges) : false,  
-        xticks = show_xticks ? (segment_edges, cps) : false,  
+        xticks = show_xticks ? (segment_edges, segment_edges) : false,  
         #xticks=false,
         #xtickfontrotation = show_xticks ? 30 : 0,
         xrotation = show_xticks ? 30 : 0,

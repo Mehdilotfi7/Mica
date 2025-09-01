@@ -87,7 +87,8 @@ function evaluate_segment(
     model_manager::ModelManager,
     loss_function::Function,
     data::Matrix{Float64},
-    penalty_fn::Function
+    penalty_fn::Function,
+    data_indices::Vector{Int}
 )
     x = Float64[]
     y = Vector{Vector{Float64}}()
@@ -101,6 +102,14 @@ function evaluate_segment(
         )
         @show loss
         @show best
+
+        simulate_full_model(best, new_cp, parnames,
+        n_global, n_segment_specific,
+        model_manager, data;
+        plot_results=true,
+        show_change_points=true,
+        show_data=true,
+        data_indices=data_indices)
 
         # calling and adding penalty 
         segment_lengths = diff([0; new_cp; n])
@@ -160,7 +169,7 @@ function detect_changepoints(
     @show loss_val
     @show best_params
     
-    simulate_full_model(best_params, CP, parnames,
+    sim, plt = simulate_full_model(best_params, CP, parnames,
                           n_global, n_segment_specific,
                           model_manager, data;
                           plot_results=true,
@@ -168,6 +177,9 @@ function detect_changepoints(
                           show_data=true,
                           data_indices=data_indices)
 
+    # Save figure to file
+    #filename = "plots/sim_step_$(length(CP))_cp.png"
+    #savefig(plt, filename)
 
     update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
 
@@ -177,7 +189,7 @@ function detect_changepoints(
             objective_function, a, b, CP, bounds, initial_chromosome, parnames, ga, min_length, step,
             n_global, n_segment_specific, n,
             model_manager, loss_function, data,
-            penalty_fn
+            penalty_fn, data_indices
         )
         # Inspiring from changepoints.jl package 
         if !isempty(x)
@@ -191,13 +203,18 @@ function detect_changepoints(
                 @show CP
                 @show best_params
 
-                simulate_full_model(best_params, CP, parnames,
+                sim, plt = simulate_full_model(best_params, CP, parnames,
                           n_global, n_segment_specific,
                           model_manager, data;
                           plot_results=true,
                           show_change_points=true,
                           show_data=true,
                           data_indices=data_indices)
+
+                # Save figure to file
+                #filename = "plots/sim_step_$(length(CP))_cp.png"
+                #savefig(plt, filename)
+
 
                 update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
                 if chpt != a + min_length
