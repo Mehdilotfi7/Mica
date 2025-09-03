@@ -455,11 +455,12 @@ end
             ga = ga = GA(populationSize = 100, selection = uniformranking(20), crossover = MILX(0.01, 0.17, 0.5), mutationRate=0.3,
             crossoverRate=0.6, mutation = gaussian(0.0001))
             penalty_fun(p,n) = 1.0 * p * log(n)
+            data_indices = [1]
         
             x, y = evaluate_segment(
                 objective_function,
                 a, b, CP, bounds, chromosome, parnames, ga, min_length, step,
-                0, 1, n, manager, loss_fn, data, penalty_fun
+                0, 1, n, manager, loss_fn, data, penalty_fun, data_indices
             )
         
             @test length(x) == length(y)
