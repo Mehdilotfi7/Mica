@@ -170,7 +170,7 @@ end
         # Update initial condition
         diff_sim = simulate_model(diff_model)
         @test isa(diff_sim, Matrix)
-        @test update_initial_condition(diff_manager, diff_sim) == diff_sim[:,end]
+        @test update_initial_condition(diff_manager, diff_sim) == diff_sim[end]
     end
 
     # =========================================================================
