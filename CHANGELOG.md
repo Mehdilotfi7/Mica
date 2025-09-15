@@ -2,7 +2,7 @@
 
 ## [1.0.0] – 2025-07-04
 ### Added
-- First official release of `Mocha.jl`.
+- First official release of `Mica.jl`.
 - Added support for time series change point detection using evolutionary and differential equations approaches.
 - Integrated plotting and benchmarking (optional dependencies).
 - User-customizable loss functions for segment evaluation.

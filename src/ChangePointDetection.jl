@@ -14,6 +14,15 @@ Evolutionary.jl for optimization.
 - `update_bounds!`: Dynamically update bounds and chromosome.
 """
 
+#----------------------------------------------------------------------
+# Animation state
+#----------------------------------------------------------------------
+const global_anim = Ref{Animation}(Animation())
+
+function reset_animation()
+    global_anim[] = Animation()
+end
+
 # ----------------------------------------------------------------------
 # Function: optimize_with_changepoints
 # ----------------------------------------------------------------------
@@ -69,6 +78,17 @@ function update_bounds!(chromosome, bounds, n_global, n_segment_specific, extrac
     append!(bounds[2], seg_upper[1])
 end
 
+function update_bounds!(initial_chromosome, previous_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
+    _, seg_specific = extract_parameters(previous_chromosome, n_global, n_segment_specific)
+    _, seg_lower = extract_parameters(bounds[1], n_global, n_segment_specific)
+    _, seg_upper = extract_parameters(bounds[2], n_global, n_segment_specific)
+
+    # i should add the estimation of previous segment pars as initial guesses for next segment
+    append!(initial_chromosome, seg_specific[end])
+    append!(bounds[1], seg_lower[1])
+    append!(bounds[2], seg_upper[1])
+end
+
 # ----------------------------------------------------------------------
 # Function: evaluate_segment
 # ----------------------------------------------------------------------
@@ -103,13 +123,16 @@ function evaluate_segment(
         @show loss
         @show best
 
-        simulate_full_model(best, new_cp, parnames,
+        sim, plt = simulate_full_model(best, new_cp, parnames,
         n_global, n_segment_specific,
         model_manager, data;
         plot_results=true,
         show_change_points=true,
         show_data=true,
         data_indices=data_indices)
+
+        # Add frame to animation directory 
+        frame(global_anim[], plt)
 
         # calling and adding penalty 
         segment_lengths = diff([0; new_cp; n])
@@ -176,12 +199,15 @@ function detect_changepoints(
                           show_change_points=true,
                           show_data=true,
                           data_indices=data_indices)
+    #
+    # Create plots folder in the current directory 
+    mkpath("plots")
+    frame(global_anim[], plt) 
 
-    # Save figure to file
-    #filename = "plots/sim_step_$(length(CP))_cp.png"
-    #savefig(plt, filename)
 
+    # update chromosome length 
     update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
+    #update_bounds!(initial_chromosome, best_params, bounds, n_global, n_segment_specific, extract_parameters)
 
     while !isempty(tau)
         a, b = pop!(tau)
@@ -211,12 +237,13 @@ function detect_changepoints(
                           show_data=true,
                           data_indices=data_indices)
 
-                # Save figure to file
-                #filename = "plots/sim_step_$(length(CP))_cp.png"
-                #savefig(plt, filename)
+    
+                # Add frame to animation directory 
+                frame(global_anim[], plt)
 
-
+                # update chromosome length 
                 update_bounds!(initial_chromosome, bounds, n_global, n_segment_specific, extract_parameters)
+                #update_bounds!(initial_chromosome, best_params, bounds, n_global, n_segment_specific, extract_parameters)
                 if chpt != a + min_length
                     push!(tau, (a, chpt))
                 end

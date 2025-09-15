@@ -61,7 +61,7 @@ end
 """
     ARIMAModelSpec <: AbstractModelSpec
 
-A specification type for defining ARIMA model behavior in the Mocha changepoint detection framework.
+A specification type for defining ARIMA model behavior in the Mica changepoint detection framework.
 
 # Fields
 - `model_function::Function`: A function that simulates the ARIMA model given parameters, time span, and optional inputs. Typically returns a time series array of shape `(1, T)` where `T` is the number of time steps.
@@ -75,7 +75,7 @@ A specification type for defining ARIMA model behavior in the Mocha changepoint 
 - `q::Int`: The number of moving average (MA) terms.
 
 # Usage
-Used as input to `ModelManager` for segment-based simulation and parameter estimation via Mocha's genetic algorithm-based changepoint detection pipeline.
+Used as input to `ModelManager` for segment-based simulation and parameter estimation via Mica's genetic algorithm-based changepoint detection pipeline.
 
 # Example
 ```julia

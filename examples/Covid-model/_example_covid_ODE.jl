@@ -1,5 +1,9 @@
 # Covid Model Definition
-
+using CSV
+using DataFrames
+using Smoothers
+using Evolutionary
+using DifferentialEquations
 # seasonality factor
 function fδ(t::Number, δ::Number, t₀::Number=0.0)
     return 1 + δ*cos(2*π*((t - t₀)/365))

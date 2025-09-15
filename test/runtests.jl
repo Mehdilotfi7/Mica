@@ -3,7 +3,7 @@ using Evolutionary
 using LabelledArrays
 using DifferentialEquations
 using Random
-using Mocha
+using Mica
 
 Random.seed!(1234)
 

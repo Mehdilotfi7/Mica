@@ -1,4 +1,4 @@
-module Mocha
+module Mica
 
 # ========== Dependencies ==========
 using Evolutionary
@@ -47,4 +47,4 @@ export call_penalty_fn, method_argnames, default_penalty, BIC_penalty
 # -- Visualization --
 export simulate_full_model, plot_parameter_changes
 
-end # module Mocha
+end # module Mica

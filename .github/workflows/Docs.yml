@@ -39,9 +39,9 @@ jobs:
         run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using Mocha
-            DocMeta.setdocmeta!(Mocha, :DocTestSetup, :(using Mocha); recursive=true)
-            doctest(Mocha)'
+            using Mica
+            DocMeta.setdocmeta!(Mica, :DocTestSetup, :(using Mica); recursive=true)
+            doctest(Mica)'
 
       - name: Build and deploy documentation
         env:

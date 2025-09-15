@@ -55,7 +55,7 @@ end
 
 function update_initial_condition(manager::ModelManager{DifferenceModelSpec}, sim_data)
     #@show sim_data
-    return sim_data[:,end]
+    return sim_data[end]
 end
 
 function update_initial_condition(manager::ModelManager{RegressionModelSpec}, sim_data)
