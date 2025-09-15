@@ -1,7 +1,7 @@
 # Mica.jl
 
 <p align="center">
-<img src="images/mocha2.png" width="200" />
+<img src="images/mocha3.png" width="200" />
 </p>
 
 <p align="center">
