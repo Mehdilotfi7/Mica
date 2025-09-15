@@ -1,6 +1,6 @@
 # Getting Started
 
-Once you've installed and loaded `Mocha.jl`, you're ready to begin modeling and detecting changepoints.
+Once you've installed and loaded `Mica.jl`, you're ready to begin modeling and detecting changepoints.
 
 ---
 
@@ -9,7 +9,7 @@ Once you've installed and loaded `Mocha.jl`, you're ready to begin modeling and 
 Try a simple built-in model using the `simulate_model` function:
 
 ```julia
-using Mocha
+using Mica
 
 model = exponential_ode_model()
 sol = simulate_model(model)
@@ -21,7 +21,7 @@ This simulates a basic exponential decay model defined by an ordinary differenti
 
 ## Core Workflow
 
-A typical workflow in Mocha.jl looks like this:
+A typical workflow in Mica.jl looks like this:
 
 1. **Define or select a model**
    Use one of the built-in examples (`exponential_ode_model`, `example_difference_model`, etc.) or define your own model structure using the provided `ODEModelSpec`, `DifferenceModelSpec`, or `RegressionModelSpec` types.

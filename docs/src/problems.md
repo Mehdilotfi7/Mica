@@ -1,6 +1,6 @@
 # Supported Problem Types
 
-Mocha.jl is designed to detect changepoints in **model-based time series**. Instead of relying on statistical shifts (e.g., mean/variance), Mocha tracks **changes in the parameters** of an explicit model.
+Mica.jl is designed to detect changepoints in **model-based time series**. Instead of relying on statistical shifts (e.g., mean/variance), Mica tracks **changes in the parameters** of an explicit model.
 
 This section outlines the types of models currently supported by the package.
 
@@ -70,7 +70,7 @@ Use for interpretable baselines or when data relationships are simple but nonlin
 
 ## Future Extensions
 
-While the current version focuses on ODEs, difference, and regression models, Mocha.jl is designed to be extensible.
+While the current version focuses on ODEs, difference, and regression models, Mica.jl is designed to be extensible.
 
 Planned or possible extensions include:
 
@@ -79,7 +79,7 @@ Planned or possible extensions include:
 * Hybrid continuous/discrete systems
 * Neural differential equations
 
-If you'd like to contribute new model types or request support, visit the [GitHub repository](https://github.com/mehdilotfi7/Mocha.jl).
+If you'd like to contribute new model types or request support, visit the [GitHub repository](https://github.com/mehdilotfi7/Mica.jl).
 
 ---
 

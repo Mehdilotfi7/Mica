@@ -1,20 +1,20 @@
-# Tutorial: Understanding Mocha's Changepoint Detection Algorithm
+# Tutorial: Understanding Mica's Changepoint Detection Algorithm
 
-This tutorial provides a detailed, step-by-step walkthrough of Mocha's methodology for detecting changepoints in time series data. It is designed to help you understand not only how to use the package but also how the underlying algorithm works.
+This tutorial provides a detailed, step-by-step walkthrough of Mica's methodology for detecting changepoints in time series data. It is designed to help you understand not only how to use the package but also how the underlying algorithm works.
 
-> 💡 **Note:** This tutorial is based on an ODE (Ordinary Differential Equation) model to illustrate the core concepts. However, the underlying methodology—segmentation, optimization, and changepoint detection—applies equally to all model types supported by Mocha.jl, including difference equations and regression models.
+> 💡 **Note:** This tutorial is based on an ODE (Ordinary Differential Equation) model to illustrate the core concepts. However, the underlying methodology—segmentation, optimization, and changepoint detection—applies equally to all model types supported by Mica.jl, including difference equations and regression models.
 
 ---
 
 ## Overview
 
-Mocha detects changepoints in time-dependent systems by analyzing shifts in model parameters instead of raw statistical properties like mean or variance. The core idea is to fit a piecewise model where each segment has its own parameters, allowing detection of structural changes in the underlying system.
+Mica detects changepoints in time-dependent systems by analyzing shifts in model parameters instead of raw statistical properties like mean or variance. The core idea is to fit a piecewise model where each segment has its own parameters, allowing detection of structural changes in the underlying system.
 
 ---
 
 ## Methodological Foundation
 
-Mocha is designed around **Piecewise Switching ODEs (PSODEs)**, where a time series is assumed to be governed by different parameter regimes across segments. It generalizes a standard ODE:
+Mica is designed around **Piecewise Switching ODEs (PSODEs)**, where a time series is assumed to be governed by different parameter regimes across segments. It generalizes a standard ODE:
 
 ```math
 \frac{dy}{dt} = f(y,t,p)
@@ -36,13 +36,13 @@ The model guarantees **continuity** across segments by ensuring:
 y(t_i^-) = y(t_i^+)
 ```
 
-This way, Mocha inherits the mathematical guarantees of traditional ODE theory within each segment.
+This way, Mica inherits the mathematical guarantees of traditional ODE theory within each segment.
 
 ---
 
 ## Problem Formulation
 
-Formally, Mocha formulates changepoint detection as a model selection problem:
+Formally, Mica formulates changepoint detection as a model selection problem:
 
 ```math
 V(CPs, y) = \sum_{i=1}^{k} c\left(x_{t_{i-1} \dots t_i}\right) + \text{penalty}
@@ -57,7 +57,7 @@ Where:
 ---
 
 ## Architecture
-![Mocha Flowchart](fig/flowchart.png)
+![Mica Flowchart](fig/flowchart.png)
 
 Algorithm Flowchart Summary: The algorithm follows a modular, iterative structure with three key blocks:
 
@@ -110,7 +110,7 @@ The GA minimizes the sum of squared errors + penalty:
 \sum_{k}\sum_{j}\sum_{i}(Data - Simulation)^2
 ```
 
-Updating chromosome bound and length is done by [`Mocha.update_bounds!`](@ref) function.
+Updating chromosome bound and length is done by [`Mica.update_bounds!`](@ref) function.
 
 ---
 
@@ -145,7 +145,7 @@ Updating chromosome bound and length is done by [`Mocha.update_bounds!`](@ref) f
 
 ## Penalty Functions
 
-To avoid overfitting, Mocha uses customizable penalty functions. Some built-in examples:
+To avoid overfitting, Mica uses customizable penalty functions. Some built-in examples:
 
 * `default_penalty(p, n) = 2 * p * log(n)`
 * `imbalance_penalty(p, n, CP)` penalizes unbalanced segment lengths.
@@ -156,12 +156,12 @@ Users can define their own functions and pass them into the API.
 
 ## Summary
 
-Mocha is built to detect **true structural changes** in modeled time series systems. It:
+Mica is built to detect **true structural changes** in modeled time series systems. It:
 
 * Supports custom models (ODEs, Difference, Regression)
 * Detects changepoints via shifts in model parameters
 * Uses evolutionary optimization for parameter fitting
 * Can incorporate penalties and constraints for robust results
 
-The modular design ensures you can plug in your own models, loss functions, and penalty strategies while taking advantage of Mocha's powerful changepoint detection engine.
+The modular design ensures you can plug in your own models, loss functions, and penalty strategies while taking advantage of Mica's powerful changepoint detection engine.
 

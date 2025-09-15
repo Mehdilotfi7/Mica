@@ -1,6 +1,6 @@
 # Examples
 
-This page provides illustrative examples demonstrating how to use Mocha.jl for changepoint detection across a range of domains. Before you go through this page, we recommend you to first familirize yoursef with the algorithm in [Tutorial: Understanding Mocha's Changepoint Detection Algorithm](@ref) page.
+This page provides illustrative examples demonstrating how to use Mica.jl for changepoint detection across a range of domains. Before you go through this page, we recommend you to first familirize yoursef with the algorithm in [Tutorial: Understanding Mica's Changepoint Detection Algorithm](@ref) page.
 
 ---
 
@@ -69,7 +69,7 @@ function sirmodel!(du, u, p, t)
     du[3] = γ * I
 end
 
-# Wrapper for Mocha
+# Wrapper for Mica
 function example_ode_model(params, tspan::Tuple{Float64, Float64}, u0::Vector{Float64})
     prob = ODEProblem(sirmodel!, u0, tspan, params)
     sol = solve(prob, Tsit5(), saveat=1.0, abstol = 1.0e-6, reltol = 1.0e-6)
@@ -118,7 +118,7 @@ detected_cp, params = detect_changepoints(
 
 ## Example 2: COVID-19 Intervention Detection in Germany
 
-This example demonstrates Mocha's application for analyzing the effects of governmental interventions during the COVID-19 pandemic in Germany.
+This example demonstrates Mica's application for analyzing the effects of governmental interventions during the COVID-19 pandemic in Germany.
 
 The model includes:
 
@@ -142,7 +142,7 @@ The objective function uses five observational signals:
 
 A logarithmic transformation is applied to each signal before loss computation to normalize the magnitude of variation. The optimization and detection pipeline uses a tailored genetic algorithm and domain-informed parameter bounds.
 
-After executing the Mocha changepoint detection routine, most of the inferred changepoints corresponded to known intervention periods, such as lockdowns or vaccination policy shifts. This result affirms Mocha’s practical utility for epidemiological modeling and policy evaluation.
+After executing the Mica changepoint detection routine, most of the inferred changepoints corresponded to known intervention periods, such as lockdowns or vaccination policy shifts. This result affirms Mica’s practical utility for epidemiological modeling and policy evaluation.
 
 **📌 Note:** Due to the use of real datasets, this example requires importing and pre-processing COVID-19 time series data from official RKI sources (CSV files).
 
@@ -298,7 +298,7 @@ detected_cp, params = detect_changepoints(
 
 ## Example 3: Wind Turbine Performance using DE
 
-This example demonstrates how **Mocha** can be used to detect abrupt behavioral shifts in wind turbine operation, using SCADA data and a physics-informed thermal model.
+This example demonstrates how **Mica** can be used to detect abrupt behavioral shifts in wind turbine operation, using SCADA data and a physics-informed thermal model.
 
 ### Dataset
 
@@ -312,13 +312,13 @@ The dataset includes:
 
 ### Model
 
-We apply Mocha to a **first-principles thermal model** of the generator (adapted from Zhang et al., 2020), which relates generator temperature to wind speed and ambient temperature through thermal resistance and loss dynamics. The model simulates how heat is generated and dissipated during turbine operation.
+We apply Mica to a **first-principles thermal model** of the generator (adapted from Zhang et al., 2020), which relates generator temperature to wind speed and ambient temperature through thermal resistance and loss dynamics. The model simulates how heat is generated and dissipated during turbine operation.
 
 Segment-specific parameters (`θ₁–θ₄`) represent thermal resistance and cooling dynamics, while non-segment-specific parameters (e.g., copper losses) remain constant across time.
 
 ### Change Point Detection
 
-Mocha detects change points by monitoring structural shifts in the estimated model parameters. The optimization uses a custom objective function based on simulation accuracy, evaluated by comparing model-predicted temperatures with observed SCADA signals.
+Mica detects change points by monitoring structural shifts in the estimated model parameters. The optimization uses a custom objective function based on simulation accuracy, evaluated by comparing model-predicted temperatures with observed SCADA signals.
 
 Each change point marks a period of altered thermal behavior, potentially corresponding to:
 
@@ -336,7 +336,7 @@ The figure below shows:
 
 These parameter shifts provide physical insight into when and how the generator's thermal behavior adapts to operational changes or potential degradation.
 
-We begin by defining the difference equations required for Mocha:
+We begin by defining the difference equations required for Mica:
 
 ```julia
 

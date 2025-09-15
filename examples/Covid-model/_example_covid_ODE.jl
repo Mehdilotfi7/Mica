@@ -160,7 +160,7 @@ data_CP = Matrix(data_CP)
 end
 
 ########################################
-# Prepare setting for using Mocha
+# Prepare setting for using Mica
 begin
 
 # Model parameter names [non-segment specific parameters; segment parameters]

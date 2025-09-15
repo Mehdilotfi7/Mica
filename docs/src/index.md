@@ -1,18 +1,18 @@
-# Mocha.jl – Model-Based Changepoint Analysis
+# Mica.jl – Model-Based Changepoint Analysis
 
-![Mocha.jl](fig/mocha3.png)
+![Mica.jl](fig/mocha3.png)
 
-Welcome to the documentation for **Mocha.jl**.
+Welcome to the documentation for **Mica.jl**.
 
-Mocha.jl provides a robust and model-driven approach to changepoint detection in time series data. 
+Mica.jl provides a robust and model-driven approach to changepoint detection in time series data. 
 
 ---
 
-## What is Mocha.jl?
+## What is Mica.jl?
 
-**Mocha.jl** provides a model-driven alternative to conventional changepoint detection methods. While most existing tools rely on detecting shifts in statistical properties (like the mean or variance), Mocha instead detects **changes in system dynamics** as reflected in model parameters.
+**Mica.jl** provides a model-driven alternative to conventional changepoint detection methods. While most existing tools rely on detecting shifts in statistical properties (like the mean or variance), Mica instead detects **changes in system dynamics** as reflected in model parameters.
 
-This makes Mocha well-suited for:
+This makes Mica well-suited for:
 - Epidemiological modeling
 - Engineering systems (e.g., thermal dynamics)
 - Economic and ecological simulations
@@ -36,16 +36,16 @@ This makes Mocha well-suited for:
 
 ## Installation
 
-To install Mocha.jl, use the Julia package manager:
+To install Mica.jl, use the Julia package manager:
 
 ```julia-repl
 julia> using Pkg
-julia> Pkg.add("Mocha")
+julia> Pkg.add("Mica")
 ```
 
 ## Citation
 
-If you use **Mocha.jl** in your research or applications, please cite the following paper:
+If you use **Mica.jl** in your research or applications, please cite the following paper:
 
-> Mehdi Lotfi, *"Mocha: Model-Based Changepoint Analysis"*, [arXiv link or DOI].
+> Mehdi Lotfi, *"Mica: Model-Informed Changepoint Analysis"*, [arXiv link or DOI].
 
