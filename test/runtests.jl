@@ -8,54 +8,6 @@ using Mica
 Random.seed!(1234)
 
 # =============================================================================
-# Test DataHandler Module
-# =============================================================================
-
-# For now this functionality is not available 
-#=
-
-
-@testset "DataHandler Module Tests" begin
-
-    @testset "DataFrame with Missing Values" begin
-        df = DataFrame(x = [1, 2, 3, 4, 5, 6],
-                       y = [10, 20, 30, 40, 50, 60])
-        mat, info = preprocess_data(df)
-        @test size(mat) == (6, 2)
-        @test !info.is_data_vector
-    end
-
-    @testset "Matrix Input" begin
-        mat_input = [1.0 2.0; 3.0 4.0; 5.0 6.0]
-        mat, info = preprocess_data(mat_input)
-        @test mat == mat_input
-        @test !info.is_data_vector
-    end
-
-    @testset "1D Vector Input" begin
-        vec = [1.0, 2.0, 3.0, 4.0]
-        mat, info = preprocess_data(vec)
-        @test mat == reshape(vec, :, 1)
-        @test info.is_data_vector
-    end
-
-    @testset "Vector of Vectors Input" begin
-        vvec = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-        mat, info = preprocess_data(vvec)
-        @test size(mat) == (2, 3)
-    end
-
-    @testset "DataFrame without Missing Values" begin
-        df_nomissing = DataFrame(a = 1:3, b = 4:6)
-        mat, info = preprocess_data(df_nomissing)
-        @test mat == Matrix(df_nomissing)
-        @test !info.is_data_vector
-    end
-
-end
-
-=#
-# =============================================================================
 # Test ModelSimulation Module
 # =============================================================================
 
@@ -441,6 +393,18 @@ end
         end
 
         # evaluate_segment
+        cd(dirname(@__FILE__))
+        mkpath("plots")
+        
+        import Mica: global_anim, reset_animation
+        # Reset the package's global animation before tests
+        reset_animation()
+
+        # Create a dummy plot and frame to initialize animation
+        using Plots
+        plt_dummy = plot(rand(10))
+        frame(global_anim[], plt_dummy)
+
         @testset "evaluate_segment" begin
             chromosome = [-0.5, -0.5, -0.5]  
             bounds = ([-1.0, -1.0, -1.0], [0.0, 0.0, 0.0])
@@ -456,15 +420,15 @@ end
             crossoverRate=0.6, mutation = gaussian(0.0001))
             penalty_fun(p,n) = 1.0 * p * log(n)
             data_indices = [1]
+
+              x, y = evaluate_segment(
+                  objective_function,
+                  a, b, CP, bounds, chromosome, parnames, ga, min_length, step,
+                  0, 1, n, manager, loss_fn, data, penalty_fun, data_indices
+                )
         
-            x, y = evaluate_segment(
-                objective_function,
-                a, b, CP, bounds, chromosome, parnames, ga, min_length, step,
-                0, 1, n, manager, loss_fn, data, penalty_fun, data_indices
-            )
-        
-            @test length(x) == length(y)
-            @test all(isfinite, x)
+               @test length(x) == length(y)
+               @test all(isfinite, x)
         end
                          
 
@@ -472,7 +436,3 @@ end
 
 end
 
-
-# =============================================================================
-# Test penalty Module
-# =============================================================================
