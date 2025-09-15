@@ -6,10 +6,8 @@
 
 <p align="center">
 
-   ![Build Status](https://travis-ci.org/Mehdilotfi7/Mica.svg?branch=main)
-   [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Mehdilotfi7.github.io/Mica.jl/stable/)
-   [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Mehdilotfi7.github.io/Mica.jl/dev/)
-   [![Coverage](https://codecov.io/gh/Mehdilotfi7/Mica.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Mehdilotfi7/Mica.jl)
+   [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://changepointdetection.com/)
+   [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://changepointdetection.com/)
 
 </p>
 
