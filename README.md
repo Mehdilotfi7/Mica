@@ -8,6 +8,11 @@
 
    [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://changepointdetection.com/)
    [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://changepointdetection.com/)
+   [![JuliaHub](https://juliahub.com/docs/Mica/version.svg)](https://juliahub.com/ui/Packages/Mica)
+   [![JuliaHub](https://juliahub.com/docs/Mica/deps.svg)](https://juliahub.com/ui/Packages/Mica)
+   [![JuliaHub](https://juliahub.com/docs/Mica/pkgeval.svg)](https://juliahub.com/ui/Packages/Mica)
+   [![JuliaHub](https://juliahub.com/docs/Mica/downloads.svg)](https://juliahub.com/ui/Packages/Mica)
+
 
 </p>
 
