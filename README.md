@@ -31,7 +31,7 @@ Supports:
 - Automatic model management and loss evaluation
 - BIC/AIC-style regularization
 
- **[📘 Full Documentation](https://Mehdilotfi7.github.io/Mica.jl/stable/)**
+ **[📘 Full Documentation](https://changepointdetection.com/)**
 
 ---
 
@@ -41,5 +41,13 @@ Supports:
 using Pkg
 Pkg.add("Mica")
 ```
+
+## Acknowledgments
+
+The segmentation module in **Mica.jl** was inspired by the excellent 
+[Changepoints.jl](https://github.com/STOR-i/Changepoints.jl) package. 
+Many thanks to its authors for their contribution to the Julia ecosystem.
+
+
 ## Package_development
 This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2024. It is currently being maintained and extended by Mehdi Lotfi.
