@@ -33,8 +33,8 @@ makedocs(;
 )
 
 deploydocs(
-  repo = "github.com/Mehdilotfi7/Mica",
+  repo = "github.com/Mehdilotfi7/Mica.jl",
   devbranch = "main",
   push_preview = false,
-  versions = ["stable" => "v1.0.0", "v1.0.0", "dev" => "dev"]
+  versions = ["stable" => "v0.1.2", "v0.1.2", "dev" => "dev"]
 )

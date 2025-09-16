@@ -1,7 +1,7 @@
 name = "Mica"
 uuid = "28c78530-8bb7-4fc0-9b88-04e8b391d412"
 authors = ["Mehdi Lotfi <mehdilotfi.tabrizu@gmail.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
