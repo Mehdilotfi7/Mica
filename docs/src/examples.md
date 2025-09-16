@@ -4,13 +4,6 @@ This page provides illustrative examples demonstrating how to use Mica.jl for ch
 
 ---
 
-## Working with functions
-
-```@example
-using Statistics # hide
-x=1
-```
-
 ## Example 1: Toy SIR Model with Synthetic Data
 
 This example demonstrates detecting changepoints in a simple SIR (Susceptible-Infectious-Recovered) epidemic model with synthetic data. The infection rate (β) changes at specific points in time.
