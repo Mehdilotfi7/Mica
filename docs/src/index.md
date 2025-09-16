@@ -49,3 +49,24 @@ If you use **Mica.jl** in your research or applications, please cite the followi
 
 > Mehdi Lotfi, *"Mica: Model-Informed Changepoint Analysis"*, [arXiv link or DOI].
 
+---
+
+## Presentations
+
+- **TSCPDetector: A Comprehensive Approach to Change Point Detection in Time Series Models**  
+  *Mehdi Lotfi, Lars Kaderali*  
+  Presented at *Statistical Computing 2024, Günzburg, Germany*
+
+- Upcoming: Presentation of **Mica.jl** at the *German Conference on Bioinformatics (GCB) 2025*
+
+
+## Acknowledgments
+
+**Mica.jl** is developed and maintained in the **Kaderali Lab**,  
+Institute of Bioinformatics, University Medicine Greifswald.
+
+**Address:**  
+Institute of Bioinformatics  
+University Medicine Greifswald  
+Felix-Hausdorff-Str. 8  
+17475 Greifswald, Germany
