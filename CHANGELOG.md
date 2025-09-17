@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] – 2025-07-04
+## [0.1.2] – 2025-07-04
 ### Added
 - First official release of `Mica.jl`.
 - Added support for time series change point detection using evolutionary and differential equations approaches.
