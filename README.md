@@ -78,4 +78,4 @@ Institute of Bioinformatics, University Medicine Greifswald.
 
 
 ## Package_development
-This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2024. It is currently being maintained and extended by Mehdi Lotfi.
+This package was originally developed by Mehdi Lotfi (@mehdilotfi7) in 2025. It is currently being maintained and extended by Mehdi Lotfi.
